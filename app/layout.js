@@ -1,6 +1,7 @@
 import "./globals.css";
 import { CurrencyProvider } from "../components/CurrencyProvider";
 import Footer from "../components/Footer";
+import FooterGate from "../components/FooterGate";
 import { SITE } from "../lib/site";
 
 export const metadata = {
@@ -25,7 +26,9 @@ export default function RootLayout({ children }) {
       <body>
         <CurrencyProvider>
           {children}
-          <Footer />
+          <FooterGate>
+            <Footer />
+          </FooterGate>
         </CurrencyProvider>
       </body>
     </html>
