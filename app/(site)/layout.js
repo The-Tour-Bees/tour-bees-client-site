@@ -4,6 +4,7 @@ import SiteHeader from "../../components/SiteHeader";
 export default function SiteLayout({ children }) {
   return (
     <>
+      <div className="site-bg" aria-hidden="true" />
       <SiteHeader />
       <main className="main">{children}</main>
     </>

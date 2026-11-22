@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AccentTitle from "../../../components/AccentTitle";
 import PageHero from "../../../components/PageHero";
 import { SITE } from "../../../lib/site";
 
@@ -47,7 +48,7 @@ export default function AboutPage() {
       <section className="section section--alt">
         <div className="container">
           <div className="section__head">
-            <h2>What we do</h2>
+            <h2><AccentTitle text="What we do" /></h2>
             <p>Everything you need for your next journey, in one place.</p>
           </div>
           <div className="grid grid--3">
@@ -64,7 +65,7 @@ export default function AboutPage() {
       <section className="section">
         <div className="container">
           <div className="section__head">
-            <h2>What we care about</h2>
+            <h2><AccentTitle text="What we care about" /></h2>
           </div>
           <div className="grid grid--3">
             {VALUES.map((v, i) => (
@@ -80,7 +81,7 @@ export default function AboutPage() {
 
       <section className="section section--alt">
         <div className="container cta-band">
-          <h2>Ready to plan your trip?</h2>
+          <h2><AccentTitle text="Ready to plan your trip?" /></h2>
           <p>Tell us where you want to go and we will take it from there.</p>
           <div className="cta-band__actions">
             <Link href="/custom-trip" className="btn btn--primary">Plan a trip</Link>

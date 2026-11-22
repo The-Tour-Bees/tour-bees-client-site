@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import AccentTitle from "../../../../components/AccentTitle";
 import EnquiryForm from "../../../../components/EnquiryForm";
 import PriceTag from "../../../../components/PriceTag";
 import { formatDateRange } from "../../../../lib/dates";
@@ -38,7 +39,7 @@ export default async function EventPage({ params }) {
         <div className="container">
           <Link href={`/events/${status}`} className="detail-hero__back">← {BADGES[status]} events</Link>
           <span className={`badge-status badge-status--${status} badge-status--inline`}>{BADGES[status]}</span>
-          <h1>{title}</h1>
+          <h1><AccentTitle text={title} /></h1>
           {summary && <p className="detail-hero__summary">{summary}</p>}
         </div>
       </section>

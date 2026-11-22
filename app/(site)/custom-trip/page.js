@@ -1,5 +1,6 @@
 import Link from "next/link";
 import BuildTripForm from "../../../components/BuildTripForm";
+import AccentTitle from "../../../components/AccentTitle";
 import PageHero from "../../../components/PageHero";
 import TripCard from "../../../components/TripCard";
 import TripTabs from "../../../components/TripTabs";
@@ -59,7 +60,7 @@ export default async function CustomTripPage({ searchParams }) {
       <section className="section section--alt">
         <div className="container">
           <div className="section__head">
-            <h2>How it works</h2>
+            <h2><AccentTitle text="How it works" /></h2>
           </div>
           <ol className="steps">
             {STEPS.map((s) => (
@@ -75,7 +76,7 @@ export default async function CustomTripPage({ searchParams }) {
       <section className="section" id="build">
         <div className="container form-wrap">
           <div className="section__head">
-            <h2>Build my trip</h2>
+            <h2><AccentTitle text="Build my trip" /></h2>
             <p>Share your plan and we will come back with an itinerary and a price.</p>
           </div>
           <div className="panel">

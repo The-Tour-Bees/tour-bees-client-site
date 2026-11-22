@@ -1,5 +1,6 @@
 import { formatDate } from "../lib/dates";
 import { carryQuery, KINDS, listPlaces, listStays, parseStayParams } from "../lib/stays";
+import AccentTitle from "./AccentTitle";
 import PageHero from "./PageHero";
 import StayCard from "./StayCard";
 import StayEnquiryForm from "./StayEnquiryForm";
@@ -50,7 +51,7 @@ export default async function StaysListing({ kind, searchParams }) {
       <section className="section section--alt" id="enquire">
         <div className="container form-wrap">
           <div className="section__head">
-            <h2>Send a booking enquiry</h2>
+            <h2><AccentTitle text="Send a booking enquiry" /></h2>
             <p>Tell us your dates and what you need. We will check availability and get back to you.</p>
           </div>
           <div className="panel">

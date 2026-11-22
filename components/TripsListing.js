@@ -1,5 +1,6 @@
 import { listDestinations, listTrips, SCOPES } from "../lib/trips";
 import BuildTripForm from "./BuildTripForm";
+import AccentTitle from "./AccentTitle";
 import PageHero from "./PageHero";
 import TripCard from "./TripCard";
 import TripFilters from "./TripFilters";
@@ -46,7 +47,7 @@ export default async function TripsListing({ scope, searchParams }) {
       <section className="section section--alt" id="build">
         <div className="container form-wrap">
           <div className="section__head">
-            <h2>Build my {copy.label.toLowerCase()} trip</h2>
+            <h2><AccentTitle text={`Build my ${copy.label.toLowerCase()} trip`} /></h2>
             <p>Tell us what you have in mind. We will plan it around you and send a price.</p>
           </div>
           <div className="panel">

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { formatDuration, getTrip, SCOPES } from "../lib/trips";
+import AccentTitle from "./AccentTitle";
 import EnquiryForm from "./EnquiryForm";
 import PriceTag from "./PriceTag";
 
@@ -35,7 +36,7 @@ export default async function TripDetail({ scope, params }) {
         <div className="container">
           <Link href={`/custom-trip/${scope}`} className="detail-hero__back">← {SCOPES[scope].label} trips</Link>
           <span className={`badge-status badge-status--${scope} badge-status--inline`}>{SCOPES[scope].label}</span>
-          <h1>{title}</h1>
+          <h1><AccentTitle text={title} /></h1>
           {summary && <p className="detail-hero__summary">{summary}</p>}
         </div>
       </section>

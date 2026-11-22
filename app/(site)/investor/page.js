@@ -1,4 +1,5 @@
 import EnquiryForm from "../../../components/EnquiryForm";
+import AccentTitle from "../../../components/AccentTitle";
 import PageHero from "../../../components/PageHero";
 
 export const metadata = {
@@ -38,7 +39,7 @@ export default function InvestorPage() {
       <section className="section">
         <div className="container">
           <div className="section__head">
-            <h2>Why The Tour Bees</h2>
+            <h2><AccentTitle text="Why The Tour Bees" words={2} /></h2>
           </div>
           <div className="grid grid--3">
             {REASONS.map((r, i) => (
@@ -55,7 +56,7 @@ export default function InvestorPage() {
       <section className="section section--alt" id="enquire">
         <div className="container form-wrap">
           <div className="section__head">
-            <h2>Investor enquiry</h2>
+            <h2><AccentTitle text="Investor enquiry" /></h2>
             <p>Share a few details and a member of our team will contact you.</p>
           </div>
           <div className="panel">

@@ -1,4 +1,5 @@
 import EnquiryForm from "../../../components/EnquiryForm";
+import AccentTitle from "../../../components/AccentTitle";
 import PageHero from "../../../components/PageHero";
 
 export const metadata = {
@@ -36,7 +37,7 @@ export default function VipPage() {
       <section className="section">
         <div className="container">
           <div className="section__head">
-            <h2>What you get</h2>
+            <h2><AccentTitle text="What you get" /></h2>
           </div>
           <div className="grid grid--4">
             {BENEFITS.map((b, i) => (
@@ -53,7 +54,7 @@ export default function VipPage() {
       <section className="section section--alt">
         <div className="container">
           <div className="section__head">
-            <h2>How it works</h2>
+            <h2><AccentTitle text="How it works" /></h2>
           </div>
           <ol className="steps">
             {STEPS.map((s) => (
@@ -69,7 +70,7 @@ export default function VipPage() {
       <section className="section" id="join">
         <div className="container form-wrap">
           <div className="section__head">
-            <h2>Request VIP membership</h2>
+            <h2><AccentTitle text="Request VIP membership" /></h2>
             <p>Membership plans and pricing will be shared when we contact you.</p>
           </div>
           <div className="panel">

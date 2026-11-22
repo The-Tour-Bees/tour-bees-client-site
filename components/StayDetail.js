@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getStay, KINDS, parseStayParams, TYPES } from "../lib/stays";
+import AccentTitle from "./AccentTitle";
 import PriceTag from "./PriceTag";
 import StayEnquiryForm from "./StayEnquiryForm";
 
@@ -28,7 +29,7 @@ export default async function StayDetail({ kind, params, searchParams }) {
         <div className="container">
           <Link href={cfg.path} className="detail-hero__back">← {kind === "hotels" ? "Hotels and resorts" : "Houseboats"}</Link>
           {type && <span className="badge-status badge-status--domestic badge-status--inline">{TYPES[type]}</span>}
-          <h1>{name}</h1>
+          <h1><AccentTitle text={name} /></h1>
           {summary && <p className="detail-hero__summary">{summary}</p>}
         </div>
       </section>
