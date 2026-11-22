@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "mongoose": "^9.12.3",
     "next": "latest",
     "react": "latest",
     "react-dom": "latest",
