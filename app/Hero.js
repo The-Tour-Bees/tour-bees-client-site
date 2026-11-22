@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import SiteHeader from "../components/SiteHeader";
 
@@ -16,6 +17,7 @@ export default function Hero() {
   const [checkOut, setCheckOut] = useState("2026-12-14");
   const [guests, setGuests] = useState({ adults: 2, children: 1, rooms: 1 });
   const [guestsOpen, setGuestsOpen] = useState(false);
+  const router = useRouter();
 
   const change = (key, delta, min) =>
     setGuests((g) => ({ ...g, [key]: Math.min(12, Math.max(min, g[key] + delta)) }));
@@ -25,6 +27,26 @@ export default function Hero() {
     { key: "children", label: "Children", hint: "Ages 0–12", min: 0 },
     { key: "rooms", label: "Rooms", hint: "Separate rooms", min: 1 },
   ];
+
+  // Stays go to /hotels with the dates and guests; Tours and Activities search by place.
+  const search = () => {
+    setGuestsOpen(false);
+    const q = location.trim();
+    const params = new URLSearchParams();
+    if (q) params.set("q", q);
+
+    if (tab === "Stays") {
+      if (checkIn) params.set("checkIn", checkIn);
+      if (checkOut) params.set("checkOut", checkOut);
+      params.set("adults", guests.adults);
+      params.set("children", guests.children);
+      params.set("rooms", guests.rooms);
+    }
+
+    const path = tab === "Stays" ? "/hotels" : tab === "Tours" ? "/custom-trip" : "/events/upcoming";
+    const qs = params.toString();
+    router.push(qs ? `${path}?${qs}` : path);
+  };
 
   const guestsLabel = `${plural(guests.adults, "adult")} · ${guests.children} ${
     guests.children === 1 ? "child" : "children"
@@ -71,6 +93,7 @@ export default function Hero() {
               <input
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && search()}
                 placeholder="Where are you going?"
               />
             </label>
@@ -138,7 +161,7 @@ export default function Hero() {
                 </div>
               )}
             </div>
-            <button type="button" className="search__go" onClick={() => setGuestsOpen(false)}>
+            <button type="button" className="search__go" onClick={search}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
                 <circle cx="11" cy="11" r="7" />
                 <path d="m20 20-3.5-3.5" />

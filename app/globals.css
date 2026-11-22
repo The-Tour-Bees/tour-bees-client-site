@@ -623,6 +623,8 @@ textarea.form__input { min-height: 130px; resize: vertical; }
 .detail-aside__price { margin: 0 0 16px; font-size: 16px; color: rgba(255, 244, 230, 0.7); }
 .detail-aside__price .price__amount { font-size: 28px; color: #fff; }
 
+.stay-summary { margin: 0 0 20px; padding: 12px 18px; border-radius: 14px; font-size: 15px; color: #fff4e6; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12); }
+
 @media (max-width: 1100px) {
   .site-header__inner { gap: 16px; }
   .burger {

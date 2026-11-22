@@ -17,6 +17,10 @@ const SUBJECTS = ["General question", "Event", "Customized trip", "Hotel / resor
 const date = z.union([z.literal(""), z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Enter a valid date")]).default("");
 const optionalNumber = z.preprocess((v) => (v === "" ? undefined : v), z.coerce.number().int().min(0).max(1_000_000_000).optional());
 
+const requiredDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Choose a date");
+const optionalCount = (max) =>
+  z.preprocess((v) => (v === "" ? undefined : v), z.coerce.number().int().min(0).max(max).optional());
+
 const HOTEL_LEVELS = ["No preference", "Budget", "Standard", "Comfort", "Luxury"];
 const TRANSPORT = ["Not sure yet", "Please include transport", "I will arrange my own"];
 const CURRENCIES = ["BDT", "USD", "EUR", "INR"];
@@ -56,6 +60,40 @@ const schema = z.discriminatedUnion("type", [
     })
     .refine((d) => !d.startDate || d.startDate >= todayInDhaka(), { path: ["startDate"], message: "Start date cannot be in the past" })
     .refine((d) => !d.startDate || !d.endDate || d.endDate >= d.startDate, { path: ["endDate"], message: "End date must be after the start date" }),
+  z
+    .object({
+      type: z.literal("hotel"),
+      ...person,
+      hotelSlug: text(120).default(""),
+      hotelName: text(200).default(""),
+      place: text(160).default(""),
+      checkIn: requiredDate,
+      checkOut: requiredDate,
+      adults: z.coerce.number().int().min(1, "At least 1 adult").max(20, "Please call us for large groups").default(1),
+      children: optionalCount(20),
+      rooms: z.coerce.number().int().min(1, "At least 1 room").max(10, "Please call us for more than 10 rooms").default(1),
+      message: text(2000).default(""),
+    })
+    .refine((d) => d.hotelSlug || d.place, { path: ["place"], message: "Tell us where you want to stay" })
+    .refine((d) => d.checkIn >= todayInDhaka(), { path: ["checkIn"], message: "Check-in cannot be in the past" })
+    .refine((d) => d.checkOut > d.checkIn, { path: ["checkOut"], message: "Check-out must be after check-in" }),
+  z
+    .object({
+      type: z.literal("houseboat"),
+      ...person,
+      houseboatSlug: text(120).default(""),
+      houseboatName: text(200).default(""),
+      place: text(160).default(""),
+      stayType: z.enum(["Overnight", "Day trip"]).default("Overnight"),
+      checkIn: requiredDate,
+      checkOut: date,
+      guests: z.coerce.number().int().min(1, "At least 1 guest").max(100, "Please call us for large groups").default(1),
+      cabins: optionalCount(20),
+      message: text(2000).default(""),
+    })
+    .refine((d) => d.houseboatSlug || d.place, { path: ["place"], message: "Tell us where you want to go" })
+    .refine((d) => d.checkIn >= todayInDhaka(), { path: ["checkIn"], message: "Date cannot be in the past" })
+    .refine((d) => d.stayType === "Day trip" || d.checkOut > d.checkIn, { path: ["checkOut"], message: "Check-out must be after check-in" }),
   z.object({
     type: z.literal("vip"),
     ...person,

@@ -16,8 +16,9 @@ const STEPS = [
   { title: "You travel", text: "Confirm the plan and enjoy the trip. We stay in touch along the way." },
 ];
 
-export default async function CustomTripPage() {
-  const featured = await listTrips({ limit: 6 });
+export default async function CustomTripPage({ searchParams }) {
+  const q = (await searchParams).q?.toString().trim() || undefined;
+  const featured = await listTrips({ q, limit: q ? undefined : 6 });
 
   return (
     <>
@@ -38,10 +39,12 @@ export default async function CustomTripPage() {
             ))}
           </div>
 
+          {q && featured.length === 0 && <p className="empty">No trips match &ldquo;{q}&rdquo;. Tell us your plan below.</p>}
+
           {featured.length > 0 && (
             <div className="event-group">
               <div className="event-group__head">
-                <h2>Featured packages</h2>
+                <h2>{q ? `Trips matching “${q}”` : "Featured packages"}</h2>
               </div>
               <div className="grid grid--3">
                 {featured.map((t) => (

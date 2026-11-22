@@ -1,7 +1,11 @@
-import PagePlaceholder from "../../../components/PagePlaceholder";
+import StaysListing from "../../../components/StaysListing";
+import { KINDS } from "../../../lib/stays";
 
-export const metadata = { title: "Hotel / Resort Booking" };
+export const metadata = {
+  title: KINDS.hotels.title,
+  description: KINDS.hotels.description,
+};
 
-export default function Page() {
-  return <PagePlaceholder title="Hotel / Resort Booking" description="Send an enquiry for hotels and resorts." />;
+export default async function Page({ searchParams }) {
+  return <StaysListing kind="hotels" searchParams={await searchParams} />;
 }

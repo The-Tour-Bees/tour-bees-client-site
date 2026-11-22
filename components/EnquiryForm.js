@@ -3,11 +3,13 @@
 import { useState } from "react";
 
 // hidden: extra values sent with the form, e.g. { eventSlug }
+// defaults: initial values by field name, e.g. from the search the visitor just made
 // fields: [{ name, label, type: "text" | "email" | "tel" | "textarea" | "select", required, options, placeholder, full }]
 export default function EnquiryForm({
   type,
   fields,
   hidden,
+  defaults,
   submitLabel = "Send enquiry",
   successTitle = "Thank you!",
   successText = "We have received your message and will get back to you soon.",
@@ -82,13 +84,13 @@ export default function EnquiryForm({
             {f.type === "textarea" ? (
               <textarea {...common} rows={5} />
             ) : f.type === "select" ? (
-              <select {...common} defaultValue={f.options[0]}>
+              <select {...common} defaultValue={defaults?.[f.name] ?? f.options[0]}>
                 {f.options.map((o) => (
                   <option key={o} value={o}>{o}</option>
                 ))}
               </select>
             ) : (
-              <input {...common} type={f.type ?? "text"} autoComplete={f.autoComplete} />
+              <input {...common} type={f.type ?? "text"} autoComplete={f.autoComplete} defaultValue={defaults?.[f.name]} />
             )}
             {err && <span id={`${id}-error`} className="form__error">{err}</span>}
           </div>
