@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import SiteHeader from "../components/SiteHeader";
 
 const TABS = ["Stays", "Tours", "Activities"];
 const POPULAR = ["Lisbon", "Kyoto", "Banff", "Cape Town", "Bali"];
@@ -15,14 +16,6 @@ export default function Hero() {
   const [checkOut, setCheckOut] = useState("2026-12-14");
   const [guests, setGuests] = useState({ adults: 2, children: 1, rooms: 1 });
   const [guestsOpen, setGuestsOpen] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  useEffect(() => {
-    if (!menuOpen) return;
-    const onKey = (e) => e.key === "Escape" && setMenuOpen(false);
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [menuOpen]);
 
   const change = (key, delta, min) =>
     setGuests((g) => ({ ...g, [key]: Math.min(12, Math.max(min, g[key] + delta)) }));
@@ -46,39 +39,7 @@ export default function Hero() {
       <div className="hero__bg" style={{ backgroundImage: "url(/hero-bg.png)" }} />
       <div className="hero__scrim" style={{ background: scrim }} />
 
-      <header className="hero__header">
-        <div className="hero__header-inner">
-          <a href="#" className="brand">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.png" alt="The Tour Bees" />
-            <span>The Tour Bees</span>
-          </a>
-          <button
-            type="button"
-            className={menuOpen ? "burger burger--open" : "burger"}
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={menuOpen}
-            aria-controls="site-menu"
-            onClick={() => setMenuOpen((o) => !o)}
-          >
-            <span />
-            <span />
-            <span />
-          </button>
-          <div id="site-menu" className={menuOpen ? "menu menu--open" : "menu"}>
-            <nav className="nav" onClick={() => setMenuOpen(false)}>
-              <a href="#" className="nav__active">Home</a>
-              <a href="#">Destinations</a>
-              <a href="#">Journal</a>
-              <a href="#">Contact</a>
-            </nav>
-            <div className="header-actions" onClick={() => setMenuOpen(false)}>
-              <a href="#" className="signin">Sign in</a>
-              <a href="#" className="btn-nav">Become an expert</a>
-            </div>
-          </div>
-        </div>
-      </header>
+      <SiteHeader overlay />
 
       <div className="hero__content">
         <span className="badge">

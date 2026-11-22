@@ -21,6 +21,7 @@ The Tour Bees is a travel platform offering events, customized trips, hotel/reso
 | EMI System | Lets a customer pay for a tour package in instalments using a credit card. (The sitemap image says "EHI"; confirmed as EMI.) |
 | Hotel / Resort / Houseboat bookings | **Enquiry only.** The guest submits a request; the team confirms and collects payment offline. |
 | Admin panel location | Same Next.js app, under `/admin`. |
+| Stack | **MERN**: MongoDB, Express, React, Node.js. Any external server is **Express**. Database is **MongoDB**. |
 | Currencies | Every price available in **BDT, USD, EU (EUR), INR**. |
 | Responsiveness | Fully mobile responsive with a hamburger menu (done for the Home hero). |
 
@@ -92,37 +93,81 @@ Home · Events (dropdown: Previous / Ongoing / Upcoming) · Customized Trip (dro
 
 ## 4. Technical Approach **[Proposed]**
 
+**Stack: MERN.** React frontend, an Express + Node.js API server, MongoDB database.
+
+```
+Browser ──► Next.js (React) frontend ──► Express API (Node.js) ──► MongoDB (Atlas)
+                                              │
+                                              ├── SMS / email (OTP, notifications)
+                                              ├── Cloudinary (images, uploads)
+                                              └── Payment gateway (EMI, later)
+```
+
 | Area | Choice | Why |
 |------|--------|-----|
-| Framework | Next.js (App Router), already in use | Already set up; SSR/ISR for SEO on public pages. |
-| Hosting | Vercel | Already deploying there. |
-| Database | Postgres via Vercel Marketplace (Neon) | Relational data fits users, bookings, events, commissions. |
-| ORM | Drizzle or Prisma | Typed queries and migrations. |
-| Auth | Auth.js or Clerk, plus custom OTP and approval flow | Password login, OTP, reset; roles stored on the user. |
-| OTP / SMS | SMS gateway for Bangladesh (e.g. SSL Wireless, BulkSMSBD) and email | Mobile OTP is required by the plan. |
-| File storage | Vercel Blob | Profile photos, event images, NID uploads. |
-| Email | Resend or similar | Enquiry notifications, temporary passwords, resets. |
-| Payments (EMI only) | A Bangladesh gateway that supports card instalments (e.g. SSLCommerz, bKash PGW, EBL/City Bank EMI) | Only needed for the EMI System. |
-| Currency | Stored base price in BDT plus rate table for USD / EUR / INR | One source of truth, converted for display. |
+| Frontend (R) | React via **Next.js** (App Router), already in use | Already built; server rendering helps SEO on public pages. Plain React (Vite) is possible, see open questions. |
+| API server (E, N) | **Express** on Node.js, in a `server/` folder | Single backend for the website and the admin panel; all business rules and permissions live here. |
+| Database (M) | **MongoDB** on MongoDB Atlas | Flexible documents suit events, trips, enquiries and listings with varying fields. |
+| ODM | **Mongoose** | Schemas, validation, indexes and TTL for OTPs. |
+| Auth | Custom, in Express: **bcrypt** password hashes, **JWT** access and refresh tokens in httpOnly cookies, role middleware | Mobile/email + password, OTP, reset, admin approval, roles (host / agent / member / admin). |
+| OTP / SMS | SMS gateway for Bangladesh (e.g. SSL Wireless, BulkSMSBD) plus email | Mobile OTP is required by the plan. |
+| File storage | Cloudinary (via **Multer** uploads in Express) | Profile photos, event images, NID uploads. |
+| Email | Nodemailer with an SMTP provider, or Resend | Enquiry notifications, temporary passwords, resets. |
+| Payments (EMI only) | A Bangladesh gateway that supports card instalments (e.g. SSLCommerz) | Only needed for the EMI System, which is on hold. |
+| Currency | Stored base price in BDT plus a rates collection for USD / EUR / INR | One source of truth, converted for display. |
+| Validation | **Zod** on every Express route and on the forms | Consistent checks on both sides. |
+| API hardening | `helmet`, CORS locked to the site origin, `express-rate-limit`, Turnstile on public forms | Protect login, OTP and enquiry endpoints. |
+| Frontend hosting | Vercel (already deploying there) | |
+| API hosting | A Node host such as Render, Railway or a VPS | **[Open]** |
 | Styling | Existing global CSS design tokens | Match what is already built. |
-| Validation | Zod on every form and API route | Consistent server-side checks. |
 | Analytics | Vercel Analytics, optionally GA4 | Track enquiries and conversions. |
 
 ### Project structure **[Proposed]**
 
 ```
-app/
-  (site)/              public pages, shared header + footer
-    page.js            Home
-    about/ events/ vip/ investor/ emi/ custom-trip/
-    hotels/ houseboats/ contact/ projects/ booking-conditions/
-  (auth)/login, register, forgot-password, verify-otp
-  admin/               role-aware dashboard (host / agent / member / admin)
-  api/                 route handlers (enquiries, auth, events, currency)
-components/            Header, Footer, SearchCard, PriceTag, CurrencySwitcher, EnquiryForm, ...
-lib/                   db, auth, currency, recommendations, validators
-public/                static assets
+/                         (this repo)
+├── app/                  Next.js frontend
+│   ├── (site)/           public pages with the shared header
+│   │   ├── about/ events/ vip/ investor/ emi/ custom-trip/
+│   │   └── hotels/ houseboats/ contact/ projects/ booking-conditions/
+│   ├── (auth)/           login, register, forgot-password, verify-otp
+│   ├── admin/            role-aware dashboard (host / agent / member / admin)
+│   └── Hero.js, layout.js, globals.css
+├── components/           Header, Footer, PriceTag, CurrencySwitcher, EnquiryForm, ...
+├── lib/                  nav, currency, site config, API client (fetch wrapper)
+├── public/
+└── server/               Express API
+    ├── src/
+    │   ├── index.js      app bootstrap
+    │   ├── config/       env, db connection
+    │   ├── models/       Mongoose models (User, Event, Trip, Enquiry, ...)
+    │   ├── routes/       auth, users, events, trips, hotels, houseboats,
+    │   │                 enquiries, bookings, commissions, currency, uploads
+    │   ├── controllers/
+    │   ├── middleware/   auth, requireRole, validate, rateLimit, errorHandler
+    │   └── services/     otp, sms, email, currency, recommendations
+    ├── package.json
+    └── .env.example
 ```
+
+### API outline **[Proposed]**
+
+| Area | Endpoints (prefix `/api`) |
+|------|---------------------------|
+| Auth | `POST /auth/login`, `/auth/verify-otp`, `/auth/forgot-password`, `/auth/reset-password`, `/auth/change-password`, `/auth/logout`, `GET /auth/me` |
+| Users (admin) | `GET/POST /users`, `PATCH /users/:id`, `POST /users/:id/approve`, `POST /users/:id/deactivate` |
+| Events | `GET /events?status=previous\|ongoing\|upcoming`, `GET /events/:slug`, admin and host create/update |
+| Trips | `GET /trips?scope=domestic\|international`, `GET /trips/:slug` |
+| Hotels, houseboats | `GET /hotels`, `GET /houseboats`, details by slug |
+| Enquiries | `POST /enquiries` (public), `GET/PATCH /enquiries` (admin) |
+| Bookings | `POST /bookings` (host / agent / member), `GET /bookings` (own, or all for admin) |
+| Commissions | `GET /commissions` (agent own, admin all) |
+| Currency | `GET /currency/rates`, `PUT /currency/rates` (admin) |
+| Recommendations | `GET /recommendations?from=&to=&place=` |
+| Uploads | `POST /uploads` (signed Cloudinary upload) |
+
+Every route validates input with Zod and checks the caller's role on the server.
+
 
 ---
 
@@ -132,7 +177,7 @@ public/                static assets
 
 - Every product price is stored once in a base currency (BDT) and displayed in BDT, USD, EUR or INR.
 - A **currency switcher** in the header; the choice is remembered (cookie) and applied site-wide.
-- Exchange rates live in a `currency_rates` table, updated by an admin or a daily job. Show the rate date in the admin panel.
+- Exchange rates live in a `currencyrates` collection, updated by an admin or a daily job. Show the rate date in the admin panel.
 - A shared `PriceTag` component is the only place that formats prices (symbol, decimals, thousands separators).
 - **[Open]** Is EU pricing in euros (EUR)?
 
@@ -288,24 +333,27 @@ Security: hashed passwords, rate-limited login and OTP attempts with lockout, OT
 
 ## 9. Data Model **[Proposed]**
 
-| Table | Key fields |
-|-------|-----------|
-| `users` | id, account_type (host / agent / member / admin), full_name, username, email, mobile, password_hash, must_change_password, photo_url, blood_group, date_of_birth, nid_number, present_address, emergency_contact, status (active / inactive), approval_status (pending / approved / rejected), created_at |
-| `agent_profiles` | user_id, commission_percent, bkash_number, nagad_number |
-| `member_profiles` | user_id, tier (regular / vip), expires_at |
-| `otps` | id, user_id, channel, code_hash, expires_at, attempts, used_at |
-| `events` | id, title, slug, description, location, starts_on, ends_on, host_id, base_price_bdt, seats, status, images |
-| `trips` | id, title, slug, scope (domestic / international), destination, duration, itinerary, inclusions, base_price_bdt, images |
-| `hotels` | id, name, type (hotel / resort), place, amenities, base_price_bdt, images |
-| `houseboats` | id, name, place, cabins, capacity, base_price_bdt, images |
-| `enquiries` | id, type (hotel / houseboat / custom_trip / investor / contact), payload, contact info, status, assigned_to, created_at |
-| `bookings` | id, product_type, product_id, guest details, created_by (host / agent / member), amount, currency, status |
-| `commissions` | id, agent_id, booking_id, percent, amount_bdt, status (due / paid) |
-| `emi_plans` | id, bank, tenure_months, interest_percent, min_amount |
-| `emi_payments` | id, booking_id, plan_id, gateway_ref, status |
-| `currency_rates` | currency, rate_to_bdt, updated_at |
-| `projects` | id, name, description, image, url |
-| `audit_log` | id, actor_id, action, target, created_at |
+MongoDB collections, defined as Mongoose schemas. Money is stored as BDT amounts; timestamps (`createdAt`, `updatedAt`) are on every collection.
+
+| Collection | Key fields |
+|------------|-----------|
+| `users` | accountType (host / agent / member / admin), fullName, username (unique), email (unique), mobile (unique), passwordHash, mustChangePassword, photoUrl, bloodGroup, dateOfBirth, nidNumber, presentAddress, emergencyContact, status (active / inactive), approvalStatus (pending / approved / rejected), `agent` { commissionPercent, bkashNumber, nagadNumber }, `member` { tier (regular / vip), expiresAt }, failedLogins, lockedUntil |
+| `otps` | userId, channel (sms / email), codeHash, purpose (login / reset / verify), attempts, usedAt, `expiresAt` with a TTL index so MongoDB deletes it automatically |
+| `events` | title, slug, description, location, startsOn, endsOn, hostId, basePriceBdt, seats, images, tags, status (derived from dates) |
+| `trips` | title, slug, scope (domestic / international), destination, durationDays, itinerary, inclusions, exclusions, basePriceBdt, images, tags |
+| `hotels` | name, slug, type (hotel / resort), place, amenities, basePriceBdt, images |
+| `houseboats` | name, slug, place, cabins, capacity, basePriceBdt, images |
+| `enquiries` | type (hotel / houseboat / custom_trip / investor / contact), payload (flexible object), contact { name, email, mobile }, status (new / contacted / confirmed / closed / cancelled), assignedTo, notes |
+| `bookings` | productType, productId, guest { name, mobile, email }, createdBy, amountBdt, displayCurrency, status |
+| `commissions` | agentId, bookingId, percent, amountBdt, status (due / paid) |
+| `emiplans` | bank, tenureMonths, interestPercent, minAmount (on hold with EMI) |
+| `emipayments` | bookingId, planId, gatewayRef, status (on hold with EMI) |
+| `currencyrates` | currency, rateToBdt, updatedBy |
+| `projects` | name, description, image, url |
+| `auditlogs` | actorId, action, target, meta |
+
+Indexes: unique on `users.username`, `users.email`, `users.mobile`; unique `slug` on events, trips, hotels and houseboats; TTL on `otps.expiresAt`; compound on `events` (startsOn, endsOn) for the date based recommendations; text or tag index on trips and events for place based search.
+
 
 ---
 
@@ -327,14 +375,14 @@ Rough effort assumes one developer; adjust as the team grows.
 
 | Phase | Scope | Output | Estimate |
 |-------|-------|--------|----------|
-| 0. Foundation | Shared layout, header with dropdowns and hamburger, footer, design tokens, `PriceTag` and currency switcher, base components, database and deploy setup | Site shell on every page | 1 week |
+| 0. Foundation | Shared layout, header with dropdowns and hamburger, footer, design tokens, `PriceTag` and currency switcher, base components, Express API skeleton in `server/`, MongoDB Atlas connection, env setup, deploy of both apps | Site shell on every page and a running API | 1–1.5 weeks |
 | 1. Static content pages | About Us, Contact Us (with form), Booking Conditions, Other's Project, Be a VIP Member, Be an Investor (with enquiry form) | Core informational pages and lead capture | 1 week |
 | 2. Events | Events landing, Previous / Ongoing / Upcoming, event detail, filters | Working events section fed by the database | 1–1.5 weeks |
 | 3. Trips | Customized Trip, Domestic and International, package detail, "Build my trip" enquiry | Trip browsing and enquiry flow | 1–1.5 weeks |
 | 4. Hotels and houseboats | Listings, detail pages, enquiry forms, search card wired in | Enquiry-only booking flows | 1–1.5 weeks |
-| 5. Auth and admin core | Database users, login (password), OTP, forgot password, admin approval, admin add-new-user form, role-based layout | Individual logins work end to end | 2 weeks |
+| 5. Auth and admin core | Express auth routes and middleware, `users` and `otps` collections, login (password), OTP, forgot password, admin approval, admin add-new-user form, role-based layout | Individual logins work end to end | 2 weeks |
 | 6. Role dashboards | Host, Agent, Member dashboards, guest booking creation, commission tracking, enquiry management, content management in admin | Full admin panel | 2–3 weeks |
-| 7. EMI System | EMI page, calculator, gateway integration, payment records | Credit card instalments live | 1–2 weeks (depends on gateway approval) |
+| 7. EMI System (on hold, page stays "coming soon" for now) | EMI page, calculator, gateway integration, payment records | Credit card instalments live | 1–2 weeks (depends on gateway approval) |
 | 8. Smart features | Date based and place based recommendations, "You may also like" | Recommendations on Home, Events, Trips | 1 week |
 | 9. Polish and launch | SEO, performance, accessibility, QA on real phones, analytics, domain, launch checklist | Production release at thetourbees.com | 1 week |
 
@@ -360,6 +408,7 @@ Phases 1 to 4 can run partly in parallel with 5 once the shell is done. Phase 7 
 | SMS OTP delivery or cost in Bangladesh | Pick a local provider early; keep email OTP as a fallback. |
 | EMI gateway approval takes long | Apply during phase 0 or 1; build the EMI page and calculator first. |
 | Sensitive personal data (NID, blood group, address) | Restrict access by role, encrypt at rest where possible, keep an audit log, collect only what is needed. |
+| Express API needs its own hosting and CORS/cookie setup across two domains | Use a shared parent domain (e.g. `api.thetourbees.com`) and `SameSite`/`Secure` cookies; test early in phase 0. |
 | Content not ready (photos, text, prices) | Build with placeholders; track the content checklist in section 10. |
 | Scope creep from open questions | Close section 14 before building the affected phase. |
 | Exchange rates going stale | Daily rate update and a visible "rates as of" date in admin. |
@@ -376,4 +425,6 @@ Phases 1 to 4 can run partly in parallel with 5 once the shell is done. Phase 7 
 - Should there also be a separate **Admin** (super user) account? I assumed yes.
 - Brand colours: the plan images use navy and gold; the built hero uses dark with amber. Which should the site follow?
 - `admin-login-requirements.md` is referenced in the plan images but is not in this repo. Is it available?
+- **API hosting:** where should the Express server run (Render, Railway, a VPS, other)? Do we already have a MongoDB Atlas account?
+- Keep the frontend on **Next.js** (React, already built) or switch to plain React (Vite)? I recommend keeping Next.js.
 - Is a Bengali (বাংলা) version of the site needed?
