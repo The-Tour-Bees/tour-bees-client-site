@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import "./Booking"; // registers the models that populate() reads
+import "./User";
 
 const commissionSchema = new mongoose.Schema(
   {

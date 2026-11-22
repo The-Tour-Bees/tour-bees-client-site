@@ -23,7 +23,7 @@ export default async function EventsPage() {
 
   return (
     <>
-      <PageHero title="Events" description="Join a trip, see what is on right now, or look back at what we have done." />
+      <PageHero title="Our Events" description="Join a trip, see what is on right now, or look back at what we have done." />
       <section className="section">
         <div className="container">
           <EventTabs active="all" />

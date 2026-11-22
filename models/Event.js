@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import "./User"; // registers the User model that hostId points to (needed for populate)
 
 const eventSchema = new mongoose.Schema(
   {
@@ -19,6 +20,7 @@ const eventSchema = new mongoose.Schema(
     inclusions: { type: [String], default: [] },
     itinerary: { type: [{ title: String, text: String, _id: false }], default: [] },
     published: { type: Boolean, default: true },
+    demo: { type: Boolean, default: false, index: true },
   },
   { timestamps: true },
 );

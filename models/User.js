@@ -33,6 +33,7 @@ const userSchema = new mongoose.Schema(
     failedLogins: { type: Number, default: 0 },
     lockedUntil: { type: Date, default: null },
     lastLoginAt: { type: Date, default: null },
+    demo: { type: Boolean, default: false },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
   },
   { timestamps: true },
