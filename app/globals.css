@@ -34,7 +34,7 @@ button { font: inherit; }
   font-style: italic;
   font-weight: 400;
   letter-spacing: 0;
-  color: #fff;
+  color: var(--amber);
 }
 
 .hero {
@@ -305,10 +305,98 @@ h1 {
 }
 .chip:hover { background: rgba(255, 255, 255, 0.18); }
 
+.menu { display: contents; }
+.burger { display: none; }
+
 @media (max-width: 860px) {
-  .hero__header-inner { padding: 16px 20px; gap: 16px; }
-  .nav { display: none; }
-  .header-actions { margin-left: auto; }
-  .search { border-radius: 28px; }
-  .divider { display: none; }
+  .hero { min-height: 100svh; }
+  .hero__header-inner { padding: 14px 20px; gap: 16px; }
+  .brand img { height: 44px; }
+  .brand span { font-size: 19px; }
+
+  .burger {
+    pointer-events: auto;
+    margin-left: auto;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    background: rgba(16, 16, 18, 0.5);
+    backdrop-filter: blur(8px);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 0;
+  }
+  .burger span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    border-radius: 2px;
+    background: #fff;
+    transition: transform 0.25s, opacity 0.2s;
+  }
+  .burger--open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .burger--open span:nth-child(2) { opacity: 0; }
+  .burger--open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  .menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 16px;
+    right: 16px;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    border-radius: 20px;
+    background: rgba(24, 24, 26, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 24px 60px -16px rgba(0, 0, 0, 0.6);
+    pointer-events: auto;
+  }
+  .menu--open { display: flex; }
+  .nav {
+    flex: none;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 0;
+    font-size: 17px;
+    overflow: visible;
+  }
+  .nav a { padding: 14px 12px; border-radius: 12px; }
+  .nav a:hover, .nav .nav__active { background: rgba(255, 255, 255, 0.08); }
+  .header-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    margin: 4px 0 0;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+  }
+  .signin { padding: 12px; text-align: center; font-size: 16px; }
+  .btn-nav { text-align: center; padding: 14px 18px; font-size: 15px; }
+
+  .hero__content { padding: 24px 16px 48px; }
+  .search-wrap { margin-top: 36px; }
+  .tabs { margin-left: 0; align-self: center; }
+  .search { border-radius: 28px; flex-direction: column; padding: 8px; gap: 2px; }
+  .field { border-radius: 20px; padding: 12px 16px; }
+  .field--loc, .field--dates, .guests { flex: none; }
+  .divider { display: block; width: auto; height: 1px; margin: 0 16px; }
+  .popover { width: 100%; left: 0; }
+  .search__go { min-height: 56px; margin-top: 6px; }
+  .popular { margin-left: 0; justify-content: center; }
+}
+
+@media (max-width: 480px) {
+  .brand span { font-size: 17px; }
+  .badge { font-size: 12px; }
+  h1 { margin-top: 18px; }
+  .lede { margin-top: 16px; }
+  .dates input { font-size: 14px; }
 }
