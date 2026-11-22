@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 
+// hidden: extra values sent with the form, e.g. { eventSlug }
 // fields: [{ name, label, type: "text" | "email" | "tel" | "textarea" | "select", required, options, placeholder, full }]
 export default function EnquiryForm({
   type,
   fields,
+  hidden,
   submitLabel = "Send enquiry",
   successTitle = "Thank you!",
   successText = "We have received your message and will get back to you soon.",
@@ -27,7 +29,7 @@ export default function EnquiryForm({
       const res = await fetch("/api/enquiries", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type, ...data }),
+        body: JSON.stringify({ type, ...hidden, ...data }),
       });
       const body = await res.json().catch(() => ({}));
 

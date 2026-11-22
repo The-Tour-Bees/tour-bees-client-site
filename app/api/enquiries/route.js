@@ -21,6 +21,14 @@ const schema = z.discriminatedUnion("type", [
     message: text(2000).min(5, "Please write a short message"),
   }),
   z.object({
+    type: z.literal("event"),
+    ...person,
+    eventSlug: text(120).min(1),
+    eventTitle: text(200).default(""),
+    guests: z.coerce.number().int().min(1, "At least 1 guest").max(50, "Please call us for large groups").default(1),
+    message: text(2000).default(""),
+  }),
+  z.object({
     type: z.literal("vip"),
     ...person,
     message: text(2000).default(""),

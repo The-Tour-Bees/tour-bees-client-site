@@ -1,7 +1,9 @@
-import PagePlaceholder from "../../../../components/PagePlaceholder";
+import EventsListing from "../../../../components/EventsListing";
 
-export const metadata = { title: "Ongoing Events" };
+const TITLES = { upcoming: "Upcoming Events", ongoing: "Ongoing Events", previous: "Previous Events" };
 
-export default function Page() {
-  return <PagePlaceholder title="Ongoing Events" description="Events happening right now." />;
+export const metadata = { title: TITLES.ongoing };
+
+export default async function Page({ searchParams }) {
+  return <EventsListing status="ongoing" searchParams={await searchParams} />;
 }

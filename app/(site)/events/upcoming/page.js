@@ -1,7 +1,9 @@
-import PagePlaceholder from "../../../../components/PagePlaceholder";
+import EventsListing from "../../../../components/EventsListing";
 
-export const metadata = { title: "Upcoming Events" };
+const TITLES = { upcoming: "Upcoming Events", ongoing: "Ongoing Events", previous: "Previous Events" };
 
-export default function Page() {
-  return <PagePlaceholder title="Upcoming Events" description="Events you can join soon." />;
+export const metadata = { title: TITLES.upcoming };
+
+export default async function Page({ searchParams }) {
+  return <EventsListing status="upcoming" searchParams={await searchParams} />;
 }
