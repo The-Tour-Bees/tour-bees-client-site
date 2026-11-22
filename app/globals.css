@@ -908,3 +908,28 @@ textarea.form__input { min-height: 130px; resize: vertical; }
   .admin-main { padding: 28px 16px 48px; }
   .admin-fieldset, .admin-two { grid-template-columns: 1fr; }
 }
+
+/* ---------- Admin: bookings, commissions, enquiries, events ---------- */
+.pill--confirmed { background: var(--blue); color: #fff; }
+.pill--cancelled { background: var(--coral); color: #fff; }
+.pill--due { background: var(--amber); color: #1c1c1e; }
+.pill--ongoing { background: var(--coral); color: #fff; }
+.admin-section { margin: 40px 0 14px; font-size: 22px; font-weight: 600; }
+.admin-gap { margin-top: 28px; }
+.admin-cards + .admin-card, .admin-cards + .admin-section { margin-top: 28px; }
+.admin-card--static { cursor: default; max-width: 720px; }
+.admin-card--static:hover { border-color: rgba(255, 255, 255, 0.14); }
+.admin-card--accent.admin-card--static:hover { border-color: rgba(245, 166, 35, 0.45); }
+.admin-card__title { margin: 0; font-size: 24px; font-weight: 600; letter-spacing: -0.02em; }
+.admin-check { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; font-size: 15px; }
+.admin-check input { width: 18px; height: 18px; accent-color: var(--amber); }
+.table__select { font: inherit; font-size: 14px; color: #fff; padding: 7px 10px; border-radius: 10px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.2); }
+.table__select option { color: #1c1c1e; }
+.enquiries { display: flex; flex-direction: column; gap: 14px; max-width: 900px; }
+.enquiry { padding: 20px 24px; border-radius: 20px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12); }
+.enquiry__head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.enquiry__type { margin: 0 0 4px; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber); }
+.enquiry h3 { margin: 0 0 4px; font-size: 19px; font-weight: 600; }
+.enquiry__toggle { margin-top: 12px; border: 0; padding: 0; background: none; cursor: pointer; font: inherit; font-size: 14px; color: var(--amber); }
+.enquiry__body { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
+.enquiry__body .form__input { max-width: 100%; }

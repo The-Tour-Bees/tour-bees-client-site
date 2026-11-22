@@ -11,11 +11,31 @@ const MENUS = {
     { label: "Overview", href: "/admin" },
     { label: "Users", href: "/admin/users" },
     { label: "Add new user", href: "/admin/users/new" },
+    { label: "Events", href: "/admin/events" },
+    { label: "Bookings", href: "/admin/bookings" },
+    { label: "Commissions", href: "/admin/commissions" },
+    { label: "Enquiries", href: "/admin/enquiries" },
     { label: "Profile", href: "/admin/profile" },
   ],
-  host: [{ label: "Overview", href: "/admin" }, { label: "Profile", href: "/admin/profile" }],
-  agent: [{ label: "Overview", href: "/admin" }, { label: "Profile", href: "/admin/profile" }],
-  member: [{ label: "Overview", href: "/admin" }, { label: "Profile", href: "/admin/profile" }],
+  host: [
+    { label: "Overview", href: "/admin" },
+    { label: "My events", href: "/admin/events" },
+    { label: "Guest bookings", href: "/admin/bookings" },
+    { label: "New booking", href: "/admin/bookings/new" },
+    { label: "Profile", href: "/admin/profile" },
+  ],
+  agent: [
+    { label: "Overview", href: "/admin" },
+    { label: "My sales", href: "/admin/bookings" },
+    { label: "New booking", href: "/admin/bookings/new" },
+    { label: "Commission", href: "/admin/commissions" },
+    { label: "Profile", href: "/admin/profile" },
+  ],
+  member: [
+    { label: "Overview", href: "/admin" },
+    { label: "My bookings", href: "/admin/bookings" },
+    { label: "Profile", href: "/admin/profile" },
+  ],
 };
 
 export default function AdminSidebar({ role, name }) {
