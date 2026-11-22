@@ -21,7 +21,7 @@ The Tour Bees is a travel platform offering events, customized trips, hotel/reso
 | EMI System | Lets a customer pay for a tour package in instalments using a credit card. (The sitemap image says "EHI"; confirmed as EMI.) |
 | Hotel / Resort / Houseboat bookings | **Enquiry only.** The guest submits a request; the team confirms and collects payment offline. |
 | Admin panel location | Same Next.js app, under `/admin`. |
-| Stack | **MERN**: MongoDB, Express, React, Node.js. Any external server is **Express**. Database is **MongoDB**. |
+| Stack | **Next.js only** (React frontend and backend in one app) with **MongoDB** via Mongoose. No separate server. If an external server is ever needed, it will be **Express**. |
 | Currencies | Every price available in **BDT, USD, EU (EUR), INR**. |
 | Responsiveness | Fully mobile responsive with a hamburger menu (done for the Home hero). |
 
@@ -93,81 +93,80 @@ Home · Events (dropdown: Previous / Ongoing / Upcoming) · Customized Trip (dro
 
 ## 4. Technical Approach **[Proposed]**
 
-**Stack: MERN.** React frontend, an Express + Node.js API server, MongoDB database.
+**Stack: Next.js + MongoDB.** One Next.js app serves the pages and the backend (Route Handlers and Server Actions). Data lives in MongoDB. There is no separate API server.
 
 ```
-Browser ──► Next.js (React) frontend ──► Express API (Node.js) ──► MongoDB (Atlas)
-                                              │
-                                              ├── SMS / email (OTP, notifications)
-                                              ├── Cloudinary (images, uploads)
-                                              └── Payment gateway (EMI, later)
+Browser ──► Next.js app on Vercel ──► MongoDB Atlas
+            ├── pages (React Server + Client Components)
+            └── backend (Route Handlers / Server Actions)
+                  ├── SMS / email (OTP, notifications)
+                  ├── Cloudinary (images, uploads)
+                  └── Payment gateway (EMI, later)
 ```
 
 | Area | Choice | Why |
 |------|--------|-----|
-| Frontend (R) | React via **Next.js** (App Router), already in use | Already built; server rendering helps SEO on public pages. Plain React (Vite) is possible, see open questions. |
-| API server (E, N) | **Express** on Node.js, in a `server/` folder | Single backend for the website and the admin panel; all business rules and permissions live here. |
-| Database (M) | **MongoDB** on MongoDB Atlas | Flexible documents suit events, trips, enquiries and listings with varying fields. |
-| ODM | **Mongoose** | Schemas, validation, indexes and TTL for OTPs. |
-| Auth | Custom, in Express: **bcrypt** password hashes, **JWT** access and refresh tokens in httpOnly cookies, role middleware | Mobile/email + password, OTP, reset, admin approval, roles (host / agent / member / admin). |
+| Frontend | React via **Next.js** (App Router), already in use | Already built; server rendering helps SEO on public pages. |
+| Backend | Next.js **Route Handlers** (`app/api/...`) and **Server Actions** | One codebase, one deploy, same origin (no CORS or cross-domain cookie setup). |
+| Database | **MongoDB** on MongoDB Atlas | Flexible documents suit events, trips, enquiries and listings with varying fields. |
+| ODM | **Mongoose**, with a cached connection helper for serverless | Schemas, validation, indexes and TTL for OTPs. |
+| Auth | Custom: **bcrypt** password hashes, signed session in an httpOnly cookie (e.g. with `jose`), role checks in a shared helper and `proxy.js` | Mobile/email + password, OTP, reset, admin approval, roles (host / agent / member / admin). |
 | OTP / SMS | SMS gateway for Bangladesh (e.g. SSL Wireless, BulkSMSBD) plus email | Mobile OTP is required by the plan. |
-| File storage | Cloudinary (via **Multer** uploads in Express) | Profile photos, event images, NID uploads. |
+| File storage | Cloudinary (signed direct uploads from the browser) | Profile photos, event images, NID uploads; avoids the 4.5 MB request limit on Vercel. |
 | Email | Nodemailer with an SMTP provider, or Resend | Enquiry notifications, temporary passwords, resets. |
 | Payments (EMI only) | A Bangladesh gateway that supports card instalments (e.g. SSLCommerz) | Only needed for the EMI System, which is on hold. |
 | Currency | Stored base price in BDT plus a rates collection for USD / EUR / INR | One source of truth, converted for display. |
-| Validation | **Zod** on every Express route and on the forms | Consistent checks on both sides. |
-| API hardening | `helmet`, CORS locked to the site origin, `express-rate-limit`, Turnstile on public forms | Protect login, OTP and enquiry endpoints. |
-| Frontend hosting | Vercel (already deploying there) | |
-| API hosting | A Node host such as Render, Railway or a VPS | **[Open]** |
+| Validation | **Zod** in every Route Handler and Server Action, and on the forms | Consistent checks on both sides. |
+| Abuse protection | Rate limiting on login, OTP and enquiry routes, Turnstile on public forms | Protect the sensitive endpoints. |
+| Hosting | Vercel (already deploying there) | |
 | Styling | Existing global CSS design tokens | Match what is already built. |
 | Analytics | Vercel Analytics, optionally GA4 | Track enquiries and conversions. |
+
+If we later need a mobile app, scheduled heavy jobs or WebSockets, we can add an **Express** server then. The data layer (`lib/db`, `models/`) is kept independent of Next.js so it can move.
 
 ### Project structure **[Proposed]**
 
 ```
-/                         (this repo)
-├── app/                  Next.js frontend
+/
+├── app/
 │   ├── (site)/           public pages with the shared header
 │   │   ├── about/ events/ vip/ investor/ emi/ custom-trip/
 │   │   └── hotels/ houseboats/ contact/ projects/ booking-conditions/
 │   ├── (auth)/           login, register, forgot-password, verify-otp
 │   ├── admin/            role-aware dashboard (host / agent / member / admin)
+│   ├── api/              Route Handlers (auth, users, events, trips, hotels,
+│   │                     houseboats, enquiries, bookings, commissions,
+│   │                     currency, recommendations, uploads)
 │   └── Hero.js, layout.js, globals.css
 ├── components/           Header, Footer, PriceTag, CurrencySwitcher, EnquiryForm, ...
-├── lib/                  nav, currency, site config, API client (fetch wrapper)
-├── public/
-└── server/               Express API
-    ├── src/
-    │   ├── index.js      app bootstrap
-    │   ├── config/       env, db connection
-    │   ├── models/       Mongoose models (User, Event, Trip, Enquiry, ...)
-    │   ├── routes/       auth, users, events, trips, hotels, houseboats,
-    │   │                 enquiries, bookings, commissions, currency, uploads
-    │   ├── controllers/
-    │   ├── middleware/   auth, requireRole, validate, rateLimit, errorHandler
-    │   └── services/     otp, sms, email, currency, recommendations
-    ├── package.json
-    └── .env.example
+├── lib/
+│   ├── db.js             cached Mongoose connection
+│   ├── auth/             sessions, password hashing, requireRole
+│   ├── services/         otp, sms, email, currency, recommendations
+│   └── nav.js, currency.js, site.js
+├── models/               Mongoose models (User, Event, Trip, Enquiry, ...)
+└── public/
 ```
 
 ### API outline **[Proposed]**
 
-| Area | Endpoints (prefix `/api`) |
-|------|---------------------------|
-| Auth | `POST /auth/login`, `/auth/verify-otp`, `/auth/forgot-password`, `/auth/reset-password`, `/auth/change-password`, `/auth/logout`, `GET /auth/me` |
-| Users (admin) | `GET/POST /users`, `PATCH /users/:id`, `POST /users/:id/approve`, `POST /users/:id/deactivate` |
-| Events | `GET /events?status=previous\|ongoing\|upcoming`, `GET /events/:slug`, admin and host create/update |
-| Trips | `GET /trips?scope=domestic\|international`, `GET /trips/:slug` |
-| Hotels, houseboats | `GET /hotels`, `GET /houseboats`, details by slug |
-| Enquiries | `POST /enquiries` (public), `GET/PATCH /enquiries` (admin) |
-| Bookings | `POST /bookings` (host / agent / member), `GET /bookings` (own, or all for admin) |
-| Commissions | `GET /commissions` (agent own, admin all) |
-| Currency | `GET /currency/rates`, `PUT /currency/rates` (admin) |
-| Recommendations | `GET /recommendations?from=&to=&place=` |
-| Uploads | `POST /uploads` (signed Cloudinary upload) |
+Route Handlers under `app/api` (Server Actions can replace the simple form posts).
+
+| Area | Endpoints |
+|------|-----------|
+| Auth | `POST /api/auth/login`, `/verify-otp`, `/forgot-password`, `/reset-password`, `/change-password`, `/logout`, `GET /api/auth/me` |
+| Users (admin) | `GET/POST /api/users`, `PATCH /api/users/:id`, `POST /api/users/:id/approve`, `POST /api/users/:id/deactivate` |
+| Events | `GET /api/events?status=previous\|ongoing\|upcoming`, `GET /api/events/:slug`, admin and host create/update |
+| Trips | `GET /api/trips?scope=domestic\|international`, `GET /api/trips/:slug` |
+| Hotels, houseboats | `GET /api/hotels`, `GET /api/houseboats`, details by slug |
+| Enquiries | `POST /api/enquiries` (public), `GET/PATCH /api/enquiries` (admin) |
+| Bookings | `POST /api/bookings` (host / agent / member), `GET /api/bookings` (own, or all for admin) |
+| Commissions | `GET /api/commissions` (agent own, admin all) |
+| Currency | `GET /api/currency/rates`, `PUT /api/currency/rates` (admin) |
+| Recommendations | `GET /api/recommendations?from=&to=&place=` |
+| Uploads | `POST /api/uploads/sign` (signed Cloudinary upload) |
 
 Every route validates input with Zod and checks the caller's role on the server.
-
 
 ---
 
@@ -375,12 +374,12 @@ Rough effort assumes one developer; adjust as the team grows.
 
 | Phase | Scope | Output | Estimate |
 |-------|-------|--------|----------|
-| 0. Foundation | Shared layout, header with dropdowns and hamburger, footer, design tokens, `PriceTag` and currency switcher, base components, Express API skeleton in `server/`, MongoDB Atlas connection, env setup, deploy of both apps | Site shell on every page and a running API | 1–1.5 weeks |
+| 0. Foundation | Shared layout, header with dropdowns and hamburger, footer, design tokens, `PriceTag` and currency switcher, base components, MongoDB Atlas connection helper, env setup, health route | Site shell on every page and a working database connection | 1 week |
 | 1. Static content pages | About Us, Contact Us (with form), Booking Conditions, Other's Project, Be a VIP Member, Be an Investor (with enquiry form) | Core informational pages and lead capture | 1 week |
 | 2. Events | Events landing, Previous / Ongoing / Upcoming, event detail, filters | Working events section fed by the database | 1–1.5 weeks |
 | 3. Trips | Customized Trip, Domestic and International, package detail, "Build my trip" enquiry | Trip browsing and enquiry flow | 1–1.5 weeks |
 | 4. Hotels and houseboats | Listings, detail pages, enquiry forms, search card wired in | Enquiry-only booking flows | 1–1.5 weeks |
-| 5. Auth and admin core | Express auth routes and middleware, `users` and `otps` collections, login (password), OTP, forgot password, admin approval, admin add-new-user form, role-based layout | Individual logins work end to end | 2 weeks |
+| 5. Auth and admin core | Auth Route Handlers and role helpers, `users` and `otps` collections, login (password), OTP, forgot password, admin approval, admin add-new-user form, role-based layout | Individual logins work end to end | 2 weeks |
 | 6. Role dashboards | Host, Agent, Member dashboards, guest booking creation, commission tracking, enquiry management, content management in admin | Full admin panel | 2–3 weeks |
 | 7. EMI System (on hold, page stays "coming soon" for now) | EMI page, calculator, gateway integration, payment records | Credit card instalments live | 1–2 weeks (depends on gateway approval) |
 | 8. Smart features | Date based and place based recommendations, "You may also like" | Recommendations on Home, Events, Trips | 1 week |
@@ -408,7 +407,7 @@ Phases 1 to 4 can run partly in parallel with 5 once the shell is done. Phase 7 
 | SMS OTP delivery or cost in Bangladesh | Pick a local provider early; keep email OTP as a fallback. |
 | EMI gateway approval takes long | Apply during phase 0 or 1; build the EMI page and calculator first. |
 | Sensitive personal data (NID, blood group, address) | Restrict access by role, encrypt at rest where possible, keep an audit log, collect only what is needed. |
-| Express API needs its own hosting and CORS/cookie setup across two domains | Use a shared parent domain (e.g. `api.thetourbees.com`) and `SameSite`/`Secure` cookies; test early in phase 0. |
+| Mongoose on serverless (too many connections) | Cache the connection in a helper and use Atlas pooling. |
 | Content not ready (photos, text, prices) | Build with placeholders; track the content checklist in section 10. |
 | Scope creep from open questions | Close section 14 before building the affected phase. |
 | Exchange rates going stale | Daily rate update and a visible "rates as of" date in admin. |
@@ -425,6 +424,5 @@ Phases 1 to 4 can run partly in parallel with 5 once the shell is done. Phase 7 
 - Should there also be a separate **Admin** (super user) account? I assumed yes.
 - Brand colours: the plan images use navy and gold; the built hero uses dark with amber. Which should the site follow?
 - `admin-login-requirements.md` is referenced in the plan images but is not in this repo. Is it available?
-- **API hosting:** where should the Express server run (Render, Railway, a VPS, other)? Do we already have a MongoDB Atlas account?
-- Keep the frontend on **Next.js** (React, already built) or switch to plain React (Vite)? I recommend keeping Next.js.
+- Do we already have a **MongoDB Atlas** account, or should we create one?
 - Is a Bengali (বাংলা) version of the site needed?
