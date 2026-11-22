@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 const TABS = ["Stays", "Tours", "Activities"];
 const POPULAR = ["Lisbon", "Kyoto", "Banff", "Cape Town", "Bali"];
-const OVERLAY = 0.8;
+const OVERLAY = 1;
 
 const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
 
