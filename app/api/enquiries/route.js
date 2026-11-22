@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { todayInDhaka } from "../../../lib/dates";
 import { EnquiryStorageUnavailable, saveEnquiry } from "../../../lib/enquiries";
 
 const text = (max) => z.string().trim().max(max);
@@ -12,6 +13,13 @@ const person = {
 
 const INTERESTS = ["Events", "Trips", "Hotels, resorts and houseboats", "Something else"];
 const SUBJECTS = ["General question", "Event", "Customized trip", "Hotel / resort", "Houseboat", "Other"];
+
+const date = z.union([z.literal(""), z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Enter a valid date")]).default("");
+const optionalNumber = z.preprocess((v) => (v === "" ? undefined : v), z.coerce.number().int().min(0).max(1_000_000_000).optional());
+
+const HOTEL_LEVELS = ["No preference", "Budget", "Standard", "Comfort", "Luxury"];
+const TRANSPORT = ["Not sure yet", "Please include transport", "I will arrange my own"];
+const CURRENCIES = ["BDT", "USD", "EUR", "INR"];
 
 const schema = z.discriminatedUnion("type", [
   z.object({
@@ -28,6 +36,26 @@ const schema = z.discriminatedUnion("type", [
     guests: z.coerce.number().int().min(1, "At least 1 guest").max(50, "Please call us for large groups").default(1),
     message: text(2000).default(""),
   }),
+  z
+    .object({
+      type: z.literal("custom_trip"),
+      ...person,
+      scope: z.enum(["Domestic", "International"]).default("Domestic"),
+      destination: text(160).min(2, "Tell us where you want to go"),
+      startDate: date,
+      endDate: date,
+      travellers: z.coerce.number().int().min(1, "At least 1 traveller").max(50, "Please call us for large groups").default(1),
+      budget: optionalNumber,
+      budgetCurrency: z.enum(CURRENCIES).default("BDT"),
+      hotelLevel: z.enum(HOTEL_LEVELS).default("No preference"),
+      transport: z.enum(TRANSPORT).default("Not sure yet"),
+      interests: text(300).default(""),
+      message: text(2000).default(""),
+      tripSlug: text(120).default(""),
+      tripTitle: text(200).default(""),
+    })
+    .refine((d) => !d.startDate || d.startDate >= todayInDhaka(), { path: ["startDate"], message: "Start date cannot be in the past" })
+    .refine((d) => !d.startDate || !d.endDate || d.endDate >= d.startDate, { path: ["endDate"], message: "End date must be after the start date" }),
   z.object({
     type: z.literal("vip"),
     ...person,

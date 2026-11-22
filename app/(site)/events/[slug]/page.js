@@ -34,18 +34,18 @@ export default async function EventPage({ params }) {
 
   return (
     <>
-      <section className="event-hero">
+      <section className="detail-hero">
         <div className="container">
-          <Link href={`/events/${status}`} className="event-hero__back">← {BADGES[status]} events</Link>
+          <Link href={`/events/${status}`} className="detail-hero__back">← {BADGES[status]} events</Link>
           <span className={`badge-status badge-status--${status} badge-status--inline`}>{BADGES[status]}</span>
           <h1>{title}</h1>
-          {summary && <p className="event-hero__summary">{summary}</p>}
+          {summary && <p className="detail-hero__summary">{summary}</p>}
         </div>
       </section>
 
       <section className="section">
-        <div className="container event-layout">
-          <div className="event-main">
+        <div className="container detail-layout">
+          <div className="detail-main">
             {images.length > 0 && (
               <div className={images.length > 1 ? "gallery gallery--multi" : "gallery"}>
                 {images.slice(0, 5).map((src, i) => (
@@ -88,9 +88,9 @@ export default async function EventPage({ params }) {
             )}
           </div>
 
-          <aside className="event-aside">
+          <aside className="detail-aside">
             <div className="panel">
-              <p className="event-aside__price">
+              <p className="detail-aside__price">
                 <PriceTag amountBdt={basePriceBdt} suffix="/ person" />
               </p>
               <dl className="facts">
@@ -102,7 +102,7 @@ export default async function EventPage({ params }) {
 
               {open ? (
                 <>
-                  <h2 className="event-aside__title">Enquire about this event</h2>
+                  <h2 className="detail-aside__title">Enquire about this event</h2>
                   <EnquiryForm
                     type="event"
                     hidden={{ eventSlug: event.slug, eventTitle: title }}
