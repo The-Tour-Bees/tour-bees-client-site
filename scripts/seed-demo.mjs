@@ -4,7 +4,7 @@
 //   node --env-file=.env.local scripts/seed-demo.mjs            add or refresh the demo content
 //   node --env-file=.env.local scripts/seed-demo.mjs --remove   delete all demo content
 //
-// Pictures are illustrations in public/demo. Names are made up. Replace with real content before launch.
+// Pictures are real stock photos from Unsplash (see PHOTOS below). Names are made up. Replace with real content before launch.
 import bcrypt from "bcryptjs";
 import crypto from "node:crypto";
 import mongoose from "mongoose";
@@ -19,7 +19,34 @@ if (!process.env.MONGODB_URI) {
   process.exit(1);
 }
 
-const img = (...names) => names.map((n) => `/demo/${n}.svg`);
+// Real stock photos (Unsplash), one per category name used below. Verified live 2026-11-25.
+const PHOTOS = {
+  beach: "photo-1507525428034-b723cf961d3e",
+  island: "photo-1514282401047-d79a71a590e8",
+  resort: "photo-1571896349842-33c89424de2d",
+  room: "photo-1611892440504-42a792e24d32",
+  hills: "photo-1470071459604-3b5ec3a7fe05",
+  mountain: "photo-1506905925346-21bda4d32df4",
+  tea: "photo-1591089101324-2280d9260000",
+  forest: "photo-1441974231531-c6227db76b6e",
+  river: "photo-1504893524553-b855bce32c67",
+  boat: "photo-1476514525535-07fb3b4ae5f1",
+  houseboat: "photo-1602216056096-3b40cc0c9944",
+  heritage: "photo-1524492412937-b28074a5d7da",
+  food: "photo-1504674900247-0877df9cc836",
+  city: "photo-1449824913935-59a10b8d2000",
+  bangkok: "photo-1508009603885-50cf7c579365",
+  temple: "photo-1596402184320-417e7178b2cd",
+  dunes: "photo-1509316785289-025f5b846b35",
+  dubai: "photo-1512453979798-5ea266f8880c",
+  waterfall: "photo-1432405972618-c60b0225b8f9",
+};
+const img = (...names) =>
+  names.map((n) => {
+    const id = PHOTOS[n];
+    if (!id) throw new Error("Unknown demo photo category: " + n);
+    return "https://images.unsplash.com/" + id + "?q=80&w=1600&auto=format&fit=crop";
+  });
 const today = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Dhaka" });
 const day = (offset) => {
   const d = new Date(`${today}T00:00:00Z`);
@@ -103,7 +130,7 @@ const events = [
     summary: "A day of old mansions, river ghats and the best street food in the city.",
     description: "Wander the lanes of Old Dhaka with a local historian, ride a boat on the Buriganga at dusk and finish with a long street-food dinner.",
     location: "Old Dhaka", place: "Dhaka", startsOn: day(9), endsOn: day(9), basePriceBdt: 3500, seats: 25, seatsLeft: 11,
-    images: img("heritage", "city"), tags: ["city", "food", "history"],
+    images: img("heritage", "food"), tags: ["city", "food", "history"],
     inclusions: ["Guide", "River boat ride", "Food tastings", "Rickshaw rides"],
     itinerary: [{ title: "Morning", text: "Heritage mansions and old markets." }, { title: "Afternoon", text: "Ghats and a boat ride." }, { title: "Evening", text: "Street food dinner crawl." }],
   },
@@ -121,7 +148,7 @@ const events = [
     summary: "Drift across the vast wetlands on a houseboat, with fishing villages and birds at dawn.",
     description: "Stay on a houseboat across the haor, visit fishing villages, eat what the boatmen catch and watch the water turn gold at sunset.",
     location: "Sunamganj", place: "Sunamganj", startsOn: day(22), endsOn: day(24), basePriceBdt: 14500, seats: 30, seatsLeft: 12,
-    images: img("river", "boat"), tags: ["houseboat", "wetlands", "birds"],
+    images: img("houseboat", "river"), tags: ["houseboat", "wetlands", "birds"],
     inclusions: ["Houseboat stay", "All meals", "Village visit", "Boat guide"],
     itinerary: [{ title: "Day 1", text: "Board in Sunamganj and set off across the haor." }, { title: "Day 2", text: "Village visit, fishing and a sunset on the water." }, { title: "Day 3", text: "Dawn birdwatching and return." }],
   },
@@ -164,7 +191,7 @@ const trips = [
     summary: "A quick escape to the tea gardens.", description: "A short break among green tea estates, with a rainforest walk and a famous seven-layer tea.",
     inclusions: ["One night in a garden lodge", "Meals", "Estate visit"], exclusions: ["Transport to Srimangal"],
     itinerary: [{ title: "Day 1", text: "Estate tour, tea tasting and a rainforest walk." }, { title: "Day 2", text: "Sunrise in the garden and departure." }] },
-  { slug: "sylhet-waterfalls-and-tea", scope: "domestic", title: "Sylhet Waterfalls and Tea", destination: "Sylhet", durationDays: 3, basePriceBdt: 14000, images: img("tea", "forest", "hills"), tags: ["waterfalls", "tea"],
+  { slug: "sylhet-waterfalls-and-tea", scope: "domestic", title: "Sylhet Waterfalls and Tea", destination: "Sylhet", durationDays: 3, basePriceBdt: 14000, images: img("waterfall", "tea", "hills"), tags: ["waterfalls", "tea"],
     summary: "Swim at waterfalls and sip tea in the hills.", description: "Three days across Sylhet: Jaflong, Ratargul swamp forest, Lalakhal's blue water and the tea estates.",
     inclusions: ["Two nights in a hotel", "Breakfast", "Boat and jeep transfers"], exclusions: ["Lunch and dinner", "Transport to Sylhet"],
     itinerary: [{ title: "Day 1", text: "Tea estates and a sunset viewpoint." }, { title: "Day 2", text: "Ratargul swamp forest and Lalakhal." }, { title: "Day 3", text: "Jaflong and the border hills." }] },
@@ -173,7 +200,7 @@ const trips = [
     inclusions: ["Ship tickets", "Two nights in a beach resort", "Meals"], exclusions: ["Transport to Teknaf", "Water sports"],
     itinerary: [{ title: "Day 1", text: "Ship crossing and beach check-in." }, { title: "Day 2", text: "Snorkelling, kayaking and a beach dinner." }, { title: "Day 3", text: "Sunrise walk and return." }] },
 
-  { slug: "bangkok-and-pattaya-highlights", scope: "international", title: "Bangkok and Pattaya Highlights", destination: "Thailand", durationDays: 6, basePriceBdt: 85000, images: img("temple", "city", "island"), tags: ["city", "temples", "beach"],
+  { slug: "bangkok-and-pattaya-highlights", scope: "international", title: "Bangkok and Pattaya Highlights", destination: "Thailand", durationDays: 6, basePriceBdt: 85000, images: img("bangkok", "temple", "island"), tags: ["city", "temples", "beach"],
     summary: "Temples, markets and beaches in one trip.", description: "Six days between Bangkok's temples, floating markets and Pattaya's beaches, with hotels and transfers arranged for you.",
     inclusions: ["Five nights in 4-star hotels", "Daily breakfast", "Airport and city transfers", "City tour with guide"], exclusions: ["International flights", "Visa fees", "Lunch and dinner"],
     itinerary: [{ title: "Day 1", text: "Arrive in Bangkok and check in." }, { title: "Day 2", text: "Grand Palace, Wat Pho and a river cruise." }, { title: "Day 3", text: "Floating market and street food evening." }, { title: "Day 4", text: "Transfer to Pattaya and beach time." }, { title: "Day 5", text: "Island boat trip." }, { title: "Day 6", text: "Return to Bangkok and fly home." }] },
@@ -189,7 +216,7 @@ const trips = [
     summary: "Turquoise water and overwater rooms.", description: "Five days on a quiet island resort with snorkelling, sunset cruises and time to do nothing at all.",
     inclusions: ["Four nights at an island resort", "Breakfast and dinner", "Speedboat transfers"], exclusions: ["International flights", "Excursions"],
     itinerary: [{ title: "Day 1", text: "Arrive and transfer to the island." }, { title: "Day 2", text: "Snorkelling and lagoon time." }, { title: "Day 3", text: "Sunset cruise." }, { title: "Day 4", text: "Free day." }, { title: "Day 5", text: "Departure." }] },
-  { slug: "dubai-city-and-desert", scope: "international", title: "Dubai City and Desert", destination: "UAE", durationDays: 5, basePriceBdt: 125000, images: img("dunes", "city", "resort"), tags: ["city", "desert", "shopping"],
+  { slug: "dubai-city-and-desert", scope: "international", title: "Dubai City and Desert", destination: "UAE", durationDays: 5, basePriceBdt: 125000, images: img("dubai", "dunes", "resort"), tags: ["city", "desert", "shopping"],
     summary: "Skyscrapers by day, dunes by sunset.", description: "Five days of city sights, a desert safari with dinner, the old souks and a dhow cruise.",
     inclusions: ["Four nights in a 4-star hotel", "Breakfast", "Desert safari with dinner", "Airport transfers"], exclusions: ["International flights", "Visa fees", "Observation deck tickets"],
     itinerary: [{ title: "Day 1", text: "Arrive and settle in." }, { title: "Day 2", text: "City tour and the old souks." }, { title: "Day 3", text: "Desert safari and dinner." }, { title: "Day 4", text: "Dhow cruise and free evening." }, { title: "Day 5", text: "Departure." }] },
@@ -212,7 +239,7 @@ const hotels = [
     summary: "Hilltop rooms above the clouds.", description: "A hilltop resort with wide views, a sunrise terrace and easy access to the main viewpoints and waterfalls.", amenities: ["Hill views", "Sunrise terrace", "Restaurant", "Jeep booking"] },
   { slug: "riverside-heritage-hotel", name: "Riverside Heritage Hotel", type: "hotel", place: "Dhaka", stars: 4, basePriceBdt: 7600, images: img("heritage", "river"), tags: ["city", "heritage", "river"],
     summary: "A restored old building by the river in the old city.", description: "Arched corridors, high ceilings and a rooftop looking over the river. Close to the old markets and ghats.", amenities: ["Rooftop", "Restaurant", "Wi-Fi", "Air conditioning"] },
-  { slug: "city-light-hotel-dhaka", name: "City Light Hotel", type: "hotel", place: "Dhaka", stars: 3, basePriceBdt: 4500, images: img("city"), tags: ["city", "business"],
+  { slug: "city-light-hotel-dhaka", name: "City Light Hotel", type: "hotel", place: "Dhaka", stars: 3, basePriceBdt: 4500, images: img("room", "city"), tags: ["city", "business"],
     summary: "A clean, central hotel for short city stays.", description: "Simple rooms, quick Wi-Fi and a good breakfast, a short ride from the airport and the main business areas.", amenities: ["Wi-Fi", "Breakfast", "Air conditioning", "Airport pickup"] },
   { slug: "sylhet-garden-inn", name: "Sylhet Garden Inn", type: "hotel", place: "Sylhet", stars: 3, basePriceBdt: 4200, images: img("tea", "forest"), tags: ["city", "garden"],
     summary: "A calm garden hotel close to the main sights.", description: "A comfortable base for day trips to the tea estates, waterfalls and swamp forest.", amenities: ["Garden", "Wi-Fi", "Breakfast", "Car hire"] },
@@ -223,13 +250,13 @@ for (const [i, h] of hotels.entries()) await put(Hotel, { ...h, sortOrder: i });
 
 // ---------- Houseboats ----------
 const houseboats = [
-  { slug: "haor-dreamer", name: "Haor Dreamer", place: "Sunamganj", cabins: 4, capacity: 10, dayTrip: true, basePriceBdt: 32000, images: img("river", "boat"), tags: ["wetlands", "sunset"],
+  { slug: "haor-dreamer", name: "Haor Dreamer", place: "Sunamganj", cabins: 4, capacity: 10, dayTrip: true, basePriceBdt: 32000, images: img("houseboat", "river"), tags: ["wetlands", "sunset"],
     summary: "A wooden houseboat for the open wetlands.", description: "Four cabins, a roof deck and a crew who cook on board. Drift across the haor, stop at fishing villages and watch the sun go down over the water.", amenities: ["Four cabins", "Roof deck", "All meals", "Crew and cook", "Life jackets"] },
-  { slug: "padma-drifter", name: "Padma Drifter", place: "Munshiganj", cabins: 3, capacity: 8, dayTrip: true, basePriceBdt: 26000, images: img("boat", "river"), tags: ["river", "weekend"],
+  { slug: "padma-drifter", name: "Padma Drifter", place: "Munshiganj", cabins: 3, capacity: 8, dayTrip: true, basePriceBdt: 26000, images: img("houseboat", "boat"), tags: ["river", "weekend"],
     summary: "A river houseboat close to Dhaka.", description: "Three cabins and a shaded deck, an easy weekend escape on the Padma. Good for small groups and family gatherings.", amenities: ["Three cabins", "Shaded deck", "Meals on board", "Music system"] },
-  { slug: "sundarbans-explorer", name: "Sundarbans Explorer", place: "Khulna", cabins: 6, capacity: 14, dayTrip: false, basePriceBdt: 45000, images: img("forest", "boat", "river"), tags: ["forest", "wildlife"],
+  { slug: "sundarbans-explorer", name: "Sundarbans Explorer", place: "Khulna", cabins: 6, capacity: 14, dayTrip: false, basePriceBdt: 45000, images: img("houseboat", "forest", "river"), tags: ["forest", "wildlife"],
     summary: "A comfortable boat built for the mangrove forest.", description: "Six cabins, a viewing deck and a guide on board. Moves slowly through the creeks so you can watch for wildlife from the water.", amenities: ["Six cabins", "Viewing deck", "Forest guide", "All meals", "Safety equipment"] },
-  { slug: "kaptai-lake-cruiser", name: "Kaptai Lake Cruiser", place: "Rangamati", cabins: 3, capacity: 8, dayTrip: true, basePriceBdt: 24000, images: img("river", "hills"), tags: ["lake", "hills"],
+  { slug: "kaptai-lake-cruiser", name: "Kaptai Lake Cruiser", place: "Rangamati", cabins: 3, capacity: 8, dayTrip: true, basePriceBdt: 24000, images: img("boat", "hills"), tags: ["lake", "hills"],
     summary: "A lake cruiser among the hills of Rangamati.", description: "Cruise the calm lake between forested hills, stop at island villages and sleep on the water.", amenities: ["Three cabins", "Open deck", "Meals on board", "Village stop"] },
 ];
 for (const [i, b] of houseboats.entries()) await put(Houseboat, { ...b, sortOrder: i });
