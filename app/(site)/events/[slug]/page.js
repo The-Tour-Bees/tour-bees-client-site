@@ -8,6 +8,7 @@ import RecommendationStrip from "../../../../components/RecommendationStrip";
 import SmartImage from "../../../../components/SmartImage";
 import { getEvent } from "../../../../lib/events";
 import { related } from "../../../../lib/services/recommendations";
+import { shareImage } from "../../../../lib/site";
 
 const BADGES = { upcoming: "Upcoming", ongoing: "Ongoing", previous: "Completed" };
 
@@ -17,7 +18,7 @@ export async function generateMetadata({ params }) {
   return {
     title: event.title,
     description: event.summary ?? `${event.title} in ${event.location}, ${formatDateRange(event.startsOn, event.endsOn)}.`,
-    openGraph: event.images?.[0] ? { images: [event.images[0]] } : undefined,
+    ...shareImage(event.images?.[0]),
   };
 }
 

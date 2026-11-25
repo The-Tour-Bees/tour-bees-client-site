@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getStay, KINDS, parseStayParams, TYPES } from "../lib/stays";
+import { shareImage } from "../lib/site";
 import AccentTitle from "./AccentTitle";
 import PriceTag from "./PriceTag";
 import RecommendationStrip from "./RecommendationStrip";
@@ -14,7 +15,7 @@ export async function stayMetadata(kind, params) {
   return {
     title: item.name,
     description: item.summary ?? `${item.name} in ${item.place}.`,
-    openGraph: item.images?.[0] ? { images: [item.images[0]] } : undefined,
+    ...shareImage(item.images?.[0]),
   };
 }
 

@@ -3,7 +3,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { CurrencyProvider } from "../components/CurrencyProvider";
 import Footer from "../components/Footer";
 import FooterGate from "../components/FooterGate";
-import { SITE } from "../lib/site";
+import { OG_IMAGE, SITE } from "../lib/site";
 
 export const metadata = {
   metadataBase: new URL(SITE.url),
@@ -17,9 +17,9 @@ export const metadata = {
     description: SITE.description,
     url: SITE.url,
     locale: "en_US",
-    images: [{ url: "/hero-bg.png", alt: `${SITE.name} — ${SITE.tagline}` }],
+    images: [OG_IMAGE],
   },
-  twitter: { card: "summary_large_image", title: SITE.name, description: SITE.description, images: ["/hero-bg.png"] },
+  twitter: { card: "summary_large_image", title: SITE.name, description: SITE.description, images: [OG_IMAGE] },
 };
 
 export const viewport = { themeColor: "#1c1c1e" };

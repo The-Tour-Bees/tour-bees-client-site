@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { formatDuration, getTrip, SCOPES } from "../lib/trips";
+import { shareImage } from "../lib/site";
 import AccentTitle from "./AccentTitle";
 import EnquiryForm from "./EnquiryForm";
 import PriceTag from "./PriceTag";
@@ -14,7 +15,7 @@ export async function tripMetadata(scope, params) {
   return {
     title: trip.title,
     description: trip.summary ?? `${trip.title}, ${formatDuration(trip.durationDays)} in ${trip.destination}.`,
-    openGraph: trip.images?.[0] ? { images: [trip.images[0]] } : undefined,
+    ...shareImage(trip.images?.[0]),
   };
 }
 

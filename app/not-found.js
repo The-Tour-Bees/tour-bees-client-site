@@ -15,7 +15,7 @@ export default function NotFound() {
             <p className="page-hero__lede">We could not find that page. It may have moved or no longer exists.</p>
             <div className="page-hero__actions">
               <Link href="/" className="btn btn--primary">Back to home</Link>
-              <Link href="/events/upcoming" className="btn">See upcoming events</Link>
+              <Link href="/events/upcoming" className="btn btn--ghost">See upcoming events</Link>
             </div>
           </div>
         </section>

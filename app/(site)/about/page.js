@@ -32,16 +32,19 @@ export default function AboutPage() {
       />
 
       <section className="section">
-        <div className="container prose">
-          <h2>Who we are</h2>
-          <p>
-            {SITE.name} is a travel community. We organise events, plan customized trips within
-            Bangladesh and abroad, and help guests find hotels, resorts and houseboats.
-          </p>
-          <p>
-            Our hosts run the trips, our agents help you book, and our members enjoy offers made
-            for people who travel with us again and again.
-          </p>
+        <div className="container">
+          {/* The inner block keeps the line length readable while sharing the left edge of the sections below. */}
+          <div className="prose">
+            <h2>Who we are</h2>
+            <p>
+              {SITE.name} is a travel community. We organise events, plan customized trips within
+              Bangladesh and abroad, and help guests find hotels, resorts and houseboats.
+            </p>
+            <p>
+              Our hosts run the trips, our agents help you book, and our members enjoy offers made
+              for people who travel with us again and again.
+            </p>
+          </div>
         </div>
       </section>
 

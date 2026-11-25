@@ -9,12 +9,13 @@
 ## Content
 - [ ] Real photos, events, trips, hotels, houseboats (replace demo data; remove demo rows)
 - [ ] About Us text, contact details in `lib/site.js`, Booking Conditions text
-- [ ] Open Graph image (`public/hero-bg.png` is the default; a 1200×630 image is better)
+- [x] Open Graph image: `public/og.jpg` (1200×630); regenerate with `node scripts/og/make-og.mjs`
 
 ## Accounts and services
 - [ ] MongoDB Atlas cluster; set `MONGODB_URI` in Vercel (Production + Preview)
 - [ ] `AUTH_SECRET` (32+ chars) in Vercel; never commit `.env`
-- [ ] `NOTIFY_WEBHOOK_URL` / `NOTIFY_WEBHOOK_TOKEN` for OTP and enquiry notifications
+- [ ] `NOTIFY_WEBHOOK_URL` / `NOTIFY_WEBHOOK_TOKEN` for OTP messages and new booking / enquiry alerts; the receiver must handle both payload shapes (README, "Notifications")
+- [ ] Turnstile: create a widget for thetourbees.com in Cloudflare, set `NEXT_PUBLIC_TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` together in Vercel, redeploy, then send one test enquiry and one test booking (optional; forms work without it)
 - [ ] Create the first admin: `node scripts/create-admin.mjs`
 - [ ] Domain thetourbees.com added in Vercel, HTTPS on
 - [ ] Vercel Analytics enabled in the project dashboard (the code is already in the layout)
@@ -27,4 +28,5 @@
 - [ ] Each role sees only its own data
 - [ ] Currency switcher in BDT, USD, EUR, INR
 - [ ] Enquiry forms reach the admin inbox
-- [ ] Rate limiting / spam protection (Turnstile) on public forms — not built yet
+- [x] Rate limiting on public forms and sign-in routes (built; in-memory, per server instance)
+- [ ] Spam protection (Turnstile) on forms: built, active once both keys above are set

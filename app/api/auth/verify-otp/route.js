@@ -3,10 +3,14 @@ import User from "../../../../models/User";
 import { begin, handleError, json } from "../../../../lib/auth/api";
 import { checkOtp } from "../../../../lib/auth/otp";
 import { clearPreAuth, readPreAuth, startSession } from "../../../../lib/auth/session";
+import { rateLimit } from "../../../../lib/rate-limit";
 
 const schema = z.object({ code: z.string().trim().regex(/^\d{6}$/, "Enter the 6-digit code") });
 
 export async function POST(request) {
+  const limited = rateLimit(request, "auth/verify-otp");
+  if (limited) return limited;
+
   try {
     const { data, response } = await begin(request, schema);
     if (response) return response;

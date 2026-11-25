@@ -1,7 +1,10 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { z } from "zod";
 import { todayInDhaka } from "../../../lib/dates";
-import { EnquiryStorageUnavailable, saveEnquiry } from "../../../lib/enquiries";
+import { enquiryItem, EnquiryStorageUnavailable, saveEnquiry } from "../../../lib/enquiries";
+import { notifyTeam } from "../../../lib/notify";
+import { clientIp, rateLimit } from "../../../lib/rate-limit";
+import { TURNSTILE_FAILED, TURNSTILE_FIELD, verifyTurnstile } from "../../../lib/turnstile";
 
 const text = (max) => z.string().trim().max(max);
 
@@ -109,6 +112,9 @@ const schema = z.discriminatedUnion("type", [
 ]);
 
 export async function POST(request) {
+  const limited = rateLimit(request, "enquiries");
+  if (limited) return limited;
+
   let body;
   try {
     body = await request.json();
@@ -132,8 +138,14 @@ export async function POST(request) {
     );
   }
 
+  // Checked after validation, so a typo does not use up the one-time token.
+  if (!(await verifyTurnstile(body[TURNSTILE_FIELD], clientIp(request)))) {
+    return NextResponse.json({ error: TURNSTILE_FAILED }, { status: 400 });
+  }
+
+  let saved;
   try {
-    await saveEnquiry(parsed.data);
+    saved = await saveEnquiry(parsed.data);
   } catch (err) {
     if (err instanceof EnquiryStorageUnavailable) {
       return NextResponse.json(
@@ -144,6 +156,10 @@ export async function POST(request) {
     console.error(err);
     return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
   }
+
+  const { name, mobile, email } = parsed.data;
+  // after(): sent once the response has gone, so a slow webhook never delays the visitor.
+  after(() => notifyTeam({ type: "enquiry", id: saved.id, name, contact: { mobile, email }, item: enquiryItem(parsed.data) }));
 
   return NextResponse.json({ ok: true });
 }

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Select from "./Select";
+import Turnstile from "./Turnstile";
 
 // hidden: extra values sent with the form, e.g. { eventSlug }
 // defaults: initial values by field name, e.g. from the search the visitor just made
@@ -19,6 +20,7 @@ export default function EnquiryForm({
   const [status, setStatus] = useState("idle"); // idle | sending | success | error
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
+  const [attempt, setAttempt] = useState(0); // failed submits; each needs a new Turnstile token
 
   async function onSubmit(e) {
     e.preventDefault();
@@ -46,6 +48,7 @@ export default function EnquiryForm({
     } catch {
       setError("Could not reach the server. Check your connection and try again.");
     }
+    setAttempt((n) => n + 1);
     setStatus("error");
   }
 
@@ -108,6 +111,8 @@ export default function EnquiryForm({
           <input type="text" name="website" tabIndex={-1} autoComplete="off" />
         </label>
       </div>
+
+      <Turnstile attempt={attempt} />
 
       {status === "error" && <div className="form__alert" role="alert">{error}</div>}
 

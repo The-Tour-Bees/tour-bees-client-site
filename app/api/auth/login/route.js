@@ -4,6 +4,7 @@ import { deliver, NotifyUnavailable } from "../../../../lib/notify";
 import { issueOtp } from "../../../../lib/auth/otp";
 import { burnPasswordCheck, maskMobile, verifyPassword } from "../../../../lib/auth/password";
 import { startPreAuth, startSession } from "../../../../lib/auth/session";
+import { rateLimit } from "../../../../lib/rate-limit";
 
 const MAX_FAILS = 5;
 const LOCK_MS = 15 * 60 * 1000;
@@ -16,6 +17,9 @@ const schema = z.object({
 const WRONG = "Wrong mobile, email or password.";
 
 export async function POST(request) {
+  const limited = rateLimit(request, "auth/login");
+  if (limited) return limited;
+
   try {
     const { data, response } = await begin(request, schema);
     if (response) return response;

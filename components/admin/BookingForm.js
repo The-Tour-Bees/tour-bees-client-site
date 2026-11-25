@@ -5,6 +5,7 @@ import { useState } from "react";
 import { sendJson } from "../../lib/client/post";
 import Field, { inputProps } from "../auth/Field";
 import Select from "../Select";
+import Turnstile from "../Turnstile";
 
 // events: [{ id, title, basePriceBdt, seatsLeft }]. Hosts only get their own events and cannot book anything else.
 export default function BookingForm({ events, canBookOther }) {
@@ -18,6 +19,7 @@ export default function BookingForm({ events, canBookOther }) {
   const [fe, setFe] = useState({});
   const [done, setDone] = useState(null);
   const [formKey, setFormKey] = useState(0);
+  const [attempt, setAttempt] = useState(0); // failed submits; each needs a new Turnstile token
 
   const event = events.find((e) => e.id === eventId);
   const suggest = (id, n) => {
@@ -34,6 +36,7 @@ export default function BookingForm({ events, canBookOther }) {
     const { ok, data } = await sendJson("/api/bookings", { ...values, productType, eventId, travellers, amountBdt: amount });
     setBusy(false);
     if (!ok) {
+      setAttempt((n) => n + 1);
       setFe(data.fieldErrors ?? {});
       return setError(data.error ?? "Something went wrong. Please try again.");
     }
@@ -100,6 +103,8 @@ export default function BookingForm({ events, canBookOther }) {
         <Field id="guestEmail" label="Email" error={fe.guestEmail}><input {...inputProps("guestEmail", fe.guestEmail)} type="email" autoComplete="off" /></Field>
         <Field id="notes" label="Notes" full error={fe.notes}><textarea {...inputProps("notes", fe.notes)} rows={3} /></Field>
       </fieldset>
+
+      <Turnstile attempt={attempt} />
 
       {error && <div className="form__alert" role="alert">{error}</div>}
       <div className="admin-actions">
