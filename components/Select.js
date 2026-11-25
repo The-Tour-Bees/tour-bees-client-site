@@ -5,7 +5,7 @@ import { useEffect, useId, useRef, useState } from "react";
 // Themed dropdown. options: [{ value, label }]. Renders a hidden input named `name`, so it
 // submits in plain GET/POST forms. Controlled (value + onChange) or uncontrolled (defaultValue).
 export default function Select({
-  name, options, value, defaultValue, onChange, id, className = "form__input", ariaLabel, ...aria
+  name, options, value, defaultValue, onChange, id, className = "form__input", rootClassName = "", ariaLabel, ...aria
 }) {
   const controlled = value !== undefined;
   const [inner, setInner] = useState(defaultValue ?? options[0]?.value ?? "");
@@ -70,7 +70,7 @@ export default function Select({
   };
 
   return (
-    <div className="select" ref={root}>
+    <div className={`select ${rootClassName}`.trim()} ref={root}>
       {name && <input type="hidden" name={name} value={current} />}
       <button
         type="button"

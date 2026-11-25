@@ -5,6 +5,7 @@ import { useState } from "react";
 import { sendJson } from "../../lib/client/post";
 import Field, { inputProps } from "../auth/Field";
 import DatePicker from "../DatePicker";
+import Select from "../Select";
 
 const TYPES = [["host", "Host"], ["agent", "Agent"], ["member", "Member"]];
 const BLOOD = ["", "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
@@ -73,7 +74,7 @@ export default function AddUserForm() {
         <Field id="email" label="Email address (unique)" required error={fe.email}><input {...inputProps("email", fe.email)} type="email" autoComplete="off" /></Field>
         <Field id="mobile" label="Mobile / WhatsApp (unique)" required error={fe.mobile}><input {...inputProps("mobile", fe.mobile)} type="tel" placeholder="+8801XXXXXXXXX" autoComplete="off" /></Field>
         <Field id="status" label="Status" error={fe.status}>
-          <select {...inputProps("status", fe.status)} defaultValue="active"><option value="active">Active</option><option value="inactive">Inactive</option></select>
+          <Select {...inputProps("status", fe.status)} defaultValue="active" options={[{ value: "active", label: "Active" }, { value: "inactive", label: "Inactive" }]} />
         </Field>
         <p className="admin-muted form__field--full">A temporary password is created for you when you save. Profile photos will be added later.</p>
       </fieldset>
@@ -81,7 +82,7 @@ export default function AddUserForm() {
       <fieldset className="panel admin-fieldset">
         <legend>Personal details</legend>
         <Field id="bloodGroup" label="Blood group" error={fe.bloodGroup}>
-          <select {...inputProps("bloodGroup", fe.bloodGroup)} defaultValue="">{BLOOD.map((b) => <option key={b} value={b}>{b || "Not given"}</option>)}</select>
+          <Select {...inputProps("bloodGroup", fe.bloodGroup)} defaultValue="" options={BLOOD.map((b) => ({ value: b, label: b || "Not given" }))} />
         </Field>
         <Field id="dateOfBirth" label="Date of birth" error={fe.dateOfBirth}><DatePicker {...inputProps("dateOfBirth", fe.dateOfBirth)} /></Field>
         <Field id="nidNumber" label="NID number" error={fe.nidNumber}><input {...inputProps("nidNumber", fe.nidNumber)} type="text" autoComplete="off" /></Field>
@@ -101,7 +102,7 @@ export default function AddUserForm() {
         <fieldset className="panel admin-fieldset admin-fieldset--role">
           <legend>Member details</legend>
           <Field id="tier" label="Member tier" error={fe.tier}>
-            <select {...inputProps("tier", fe.tier)} defaultValue="regular"><option value="regular">Regular</option><option value="vip">VIP</option></select>
+            <Select {...inputProps("tier", fe.tier)} defaultValue="regular" options={[{ value: "regular", label: "Regular" }, { value: "vip", label: "VIP" }]} />
           </Field>
           <Field id="expiresAt" label="Membership expiry" error={fe.expiresAt}><DatePicker {...inputProps("expiresAt", fe.expiresAt)} /></Field>
         </fieldset>

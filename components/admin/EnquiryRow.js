@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import Select from "../Select";
 import { sendJson } from "../../lib/client/post";
 
 const STATUSES = ["new", "contacted", "confirmed", "closed", "cancelled"];
@@ -32,9 +33,15 @@ export default function EnquiryRow({ e }) {
           <h3>{e.name}</h3>
           <p className="admin-muted">{e.mobile}{e.email && ` · ${e.email}`} · {e.when}</p>
         </div>
-        <select className="table__select" aria-label="Enquiry status" value={status} disabled={busy} onChange={(ev) => { setStatus(ev.target.value); save({ status: ev.target.value }); }}>
-          {STATUSES.map((s) => <option key={s} value={s}>{s[0].toUpperCase() + s.slice(1)}</option>)}
-        </select>
+        <Select
+          className="table__select"
+          rootClassName="select--compact select--right"
+          ariaLabel="Enquiry status"
+          value={status}
+          disabled={busy}
+          onChange={(v) => { setStatus(v); save({ status: v }); }}
+          options={STATUSES.map((s) => ({ value: s, label: s[0].toUpperCase() + s.slice(1) }))}
+        />
       </div>
       <button type="button" className="enquiry__toggle" aria-expanded={open} onClick={() => setOpen((o) => !o)}>{open ? "Hide details" : "Show details and notes"}</button>
       {open && (

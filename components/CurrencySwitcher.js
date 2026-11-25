@@ -1,5 +1,6 @@
 "use client";
 
+import Select from "./Select";
 import { CURRENCIES } from "../lib/currency";
 import { useCurrency } from "./CurrencyProvider";
 
@@ -7,17 +8,13 @@ export default function CurrencySwitcher() {
   const { currency, setCurrency } = useCurrency();
 
   return (
-    <select
+    <Select
       className="currency"
-      aria-label="Currency"
+      rootClassName="select--compact select--right"
+      ariaLabel="Currency"
       value={currency}
-      onChange={(e) => setCurrency(e.target.value)}
-    >
-      {Object.entries(CURRENCIES).map(([code, { symbol }]) => (
-        <option key={code} value={code}>
-          {symbol} {code}
-        </option>
-      ))}
-    </select>
+      onChange={setCurrency}
+      options={Object.entries(CURRENCIES).map(([code, { symbol }]) => ({ value: code, label: `${symbol} ${code}` }))}
+    />
   );
 }

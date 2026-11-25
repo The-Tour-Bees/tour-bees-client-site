@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { sendJson } from "../../lib/client/post";
 import Field, { inputProps } from "../auth/Field";
+import Select from "../Select";
 
 // events: [{ id, title, basePriceBdt, seatsLeft }]. Hosts only get their own events and cannot book anything else.
 export default function BookingForm({ events, canBookOther }) {
@@ -72,9 +73,12 @@ export default function BookingForm({ events, canBookOther }) {
         )}
         {productType === "event" ? (
           <Field id="eventId" label="Event" required full error={fe.eventId} hint={event?.seatsLeft != null ? `${event.seatsLeft} seats left` : undefined}>
-            <select {...inputProps("eventId", fe.eventId)} value={eventId} onChange={(e) => { setEventId(e.target.value); suggest(e.target.value, travellers); }}>
-              {events.map((ev) => <option key={ev.id} value={ev.id}>{ev.title}</option>)}
-            </select>
+            <Select
+              {...inputProps("eventId", fe.eventId)}
+              value={eventId}
+              onChange={(v) => { setEventId(v); suggest(v, travellers); }}
+              options={events.map((ev) => ({ value: ev.id, label: ev.title }))}
+            />
           </Field>
         ) : (
           <Field id="title" label="What is it? (trip, hotel or houseboat name)" required full error={fe.title}>

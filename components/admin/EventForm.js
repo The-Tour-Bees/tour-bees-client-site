@@ -6,6 +6,7 @@ import { useState } from "react";
 import { sendJson } from "../../lib/client/post";
 import Field, { inputProps } from "../auth/Field";
 import DatePicker from "../DatePicker";
+import Select from "../Select";
 
 const slugify = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 80);
 
@@ -48,10 +49,11 @@ export default function EventForm({ hosts, initial, id }) {
           <input {...inputProps("slug", fe.slug)} type="text" value={slug} onChange={(e) => { setSlug(e.target.value); setSlugTouched(true); }} />
         </Field>
         <Field id="hostId" label="Host" error={fe.hostId}>
-          <select {...inputProps("hostId", fe.hostId)} defaultValue={v.hostId ?? ""}>
-            <option value="">No host yet</option>
-            {hosts.map((h) => <option key={h.id} value={h.id}>{h.fullName}</option>)}
-          </select>
+          <Select
+            {...inputProps("hostId", fe.hostId)}
+            defaultValue={v.hostId ?? ""}
+            options={[{ value: "", label: "No host yet" }, ...hosts.map((h) => ({ value: h.id, label: h.fullName }))]}
+          />
         </Field>
         <Field id="summary" label="One-line summary" full error={fe.summary}><input {...inputProps("summary", fe.summary)} type="text" defaultValue={v.summary} /></Field>
         <Field id="description" label="Description" full error={fe.description}><textarea {...inputProps("description", fe.description)} rows={5} defaultValue={v.description} /></Field>

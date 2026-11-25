@@ -999,6 +999,13 @@ textarea.form__input { min-height: 130px; resize: vertical; }
 .select__opt--active { background: var(--subtle); }
 .select__opt--on { background: rgba(245, 166, 35, 0.16); font-weight: 700; }
 .select__check { flex: none; color: var(--amber); }
+.select--compact { display: inline-block; width: auto; }
+.select--compact .select__btn { width: auto; white-space: nowrap; }
+.select--right .select__list { left: auto; right: 0; }
+.select .table__select, .select .currency { color: #fff; }
+.select .currency { appearance: none; }
+.select__btn:disabled { opacity: 0.6; cursor: wait; }
+.select .table__select .select__chev, .select .currency .select__chev { opacity: 0.8; }
 .filters .select { flex: 1 1 160px; }
 .filters .select .form__input { width: 100%; }
 .filters .form__input + .select .form__input, .filters .select + .select .form__input { border-left: 1px solid var(--border); border-radius: 0; }
