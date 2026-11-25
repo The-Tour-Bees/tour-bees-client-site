@@ -6,6 +6,8 @@ import RecommendationStrip from "../../../components/RecommendationStrip";
 import { listEvents } from "../../../lib/events";
 import { recommend } from "../../../lib/services/recommendations";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Events",
   description: "Previous, ongoing and upcoming events from The Tour Bees.",
