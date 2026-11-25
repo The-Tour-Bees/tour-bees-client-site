@@ -18,6 +18,7 @@ const MENUS = {
     { label: "Bookings", href: "/admin/bookings" },
     { label: "Commissions", href: "/admin/commissions" },
     { label: "Enquiries", href: "/admin/enquiries" },
+    { label: "Currency rates", href: "/admin/rates" },
     { label: "Profile", href: "/admin/profile" },
   ],
   host: [

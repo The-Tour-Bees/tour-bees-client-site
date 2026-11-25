@@ -899,6 +899,11 @@ textarea.form__input { min-height: 130px; resize: vertical; }
 .admin-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; max-width: 980px; align-items: start; }
 .admin-password { display: flex; flex-direction: column; gap: 16px; }
 .admin-password h2 { margin-bottom: 0; }
+.rates { display: flex; flex-direction: column; gap: 16px; max-width: 640px; }
+.rates h2 { margin: 0; font-size: 22px; font-weight: 600; }
+.rates .form__input:disabled { opacity: 0.6; cursor: not-allowed; }
+.rates__preview { margin: 0; font-size: 15px; line-height: 1.6; }
+.rates__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
 
 @media (max-width: 860px) {
   .auth-page { padding: 48px 16px 72px; }
