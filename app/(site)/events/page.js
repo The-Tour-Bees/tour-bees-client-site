@@ -2,7 +2,9 @@ import Link from "next/link";
 import EventCard from "../../../components/EventCard";
 import EventTabs from "../../../components/EventTabs";
 import PageHero from "../../../components/PageHero";
+import RecommendationStrip from "../../../components/RecommendationStrip";
 import { listEvents } from "../../../lib/events";
+import { recommend } from "../../../lib/services/recommendations";
 
 export const metadata = {
   title: "Events",
@@ -19,6 +21,7 @@ export default async function EventsPage() {
   const groups = await Promise.all(
     GROUPS.map(async (g) => ({ ...g, events: await listEvents({ status: g.status, limit: g.limit }) })),
   );
+  const picks = (await recommend({ limit: 12 }).catch(() => [])).filter((i) => i.kind !== "event").slice(0, 3);
   const none = groups.every((g) => g.events.length === 0);
 
   return (
@@ -47,6 +50,7 @@ export default async function EventsPage() {
             ))}
         </div>
       </section>
+      <RecommendationStrip items={picks} title="Make a trip of it" description="Trips and stays to go with your events." alt />
     </>
   );
 }

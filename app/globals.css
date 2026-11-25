@@ -933,3 +933,11 @@ textarea.form__input { min-height: 130px; resize: vertical; }
 .enquiry__toggle { margin-top: 12px; border: 0; padding: 0; background: none; cursor: pointer; font: inherit; font-size: 14px; color: var(--amber); }
 .enquiry__body { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
 .enquiry__body .form__input { max-width: 100%; }
+
+/* Accessibility: visible keyboard focus and a skip link */
+:focus-visible { outline: 2px solid var(--amber, #f5a623); outline-offset: 3px; }
+.form__input:focus-visible { outline: 0; }
+.skip-link { position: absolute; left: 12px; top: -60px; z-index: 1000; padding: 10px 16px; border-radius: 8px; background: #fff; color: #111; font-weight: 600; text-decoration: none; }
+.skip-link:focus { top: 12px; }
+#main:focus { outline: 0; }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }

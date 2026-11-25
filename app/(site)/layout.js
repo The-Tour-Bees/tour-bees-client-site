@@ -6,7 +6,7 @@ export default function SiteLayout({ children }) {
     <>
       <div className="site-bg" aria-hidden="true" />
       <SiteHeader />
-      <main className="main">{children}</main>
+      <main id="main" className="main" tabIndex={-1}>{children}</main>
     </>
   );
 }

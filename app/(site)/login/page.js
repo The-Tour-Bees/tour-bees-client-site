@@ -3,7 +3,7 @@ import LoginForm from "../../../components/auth/LoginForm";
 import AccentTitle from "../../../components/AccentTitle";
 import { authConfigured, getCurrentUser } from "../../../lib/auth/session";
 
-export const metadata = { title: "Sign in" };
+export const metadata = { title: "Sign in", description: "Sign in to The Tour Bees for hosts, agents and members.", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 
 export default async function LoginPage() {

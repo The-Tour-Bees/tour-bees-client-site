@@ -4,6 +4,8 @@ import AccentTitle from "../../../components/AccentTitle";
 import PageHero from "../../../components/PageHero";
 import TripCard from "../../../components/TripCard";
 import TripTabs from "../../../components/TripTabs";
+import RecommendationStrip from "../../../components/RecommendationStrip";
+import { recommend } from "../../../lib/services/recommendations";
 import { listTrips, SCOPES } from "../../../lib/trips";
 
 export const metadata = {
@@ -19,6 +21,7 @@ const STEPS = [
 
 export default async function CustomTripPage({ searchParams }) {
   const q = (await searchParams).q?.toString().trim() || undefined;
+  const picks = await recommend({ place: q, limit: 12 }).catch(() => []);
   const featured = await listTrips({ q, limit: q ? undefined : 6 });
 
   return (
@@ -56,6 +59,11 @@ export default async function CustomTripPage({ searchParams }) {
           )}
         </div>
       </section>
+
+      <RecommendationStrip
+        items={picks.filter((i) => i.kind === "event" || i.kind === "houseboat" || i.kind === "hotel").slice(0, 3)}
+        title={q ? `More for “${q}”` : "Events and stays to pair with your trip"}
+      />
 
       <section className="section section--alt">
         <div className="container">

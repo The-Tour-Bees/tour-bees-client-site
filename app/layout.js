@@ -1,4 +1,5 @@
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
 import { CurrencyProvider } from "../components/CurrencyProvider";
 import Footer from "../components/Footer";
 import FooterGate from "../components/FooterGate";
@@ -8,6 +9,17 @@ export const metadata = {
   metadataBase: new URL(SITE.url),
   title: { default: SITE.name, template: `%s | ${SITE.name}` },
   description: SITE.description,
+  applicationName: SITE.name,
+  openGraph: {
+    type: "website",
+    siteName: SITE.name,
+    title: SITE.name,
+    description: SITE.description,
+    url: SITE.url,
+    locale: "en_US",
+    images: [{ url: "/hero-bg.png", alt: `${SITE.name} — ${SITE.tagline}` }],
+  },
+  twitter: { card: "summary_large_image", title: SITE.name, description: SITE.description, images: ["/hero-bg.png"] },
 };
 
 export const viewport = { themeColor: "#1c1c1e" };
@@ -24,12 +36,14 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
+        <a href="#main" className="skip-link">Skip to content</a>
         <CurrencyProvider>
           {children}
           <FooterGate>
             <Footer />
           </FooterGate>
         </CurrencyProvider>
+        <Analytics />
       </body>
     </html>
   );

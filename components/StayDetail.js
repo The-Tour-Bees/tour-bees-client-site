@@ -3,7 +3,10 @@ import { notFound } from "next/navigation";
 import { getStay, KINDS, parseStayParams, TYPES } from "../lib/stays";
 import AccentTitle from "./AccentTitle";
 import PriceTag from "./PriceTag";
+import RecommendationStrip from "./RecommendationStrip";
+import SmartImage from "./SmartImage";
 import StayEnquiryForm from "./StayEnquiryForm";
+import { related } from "../lib/services/recommendations";
 
 export async function stayMetadata(kind, params) {
   const item = await getStay(kind, (await params).slug);
@@ -21,6 +24,7 @@ export default async function StayDetail({ kind, params, searchParams }) {
   if (!item) notFound();
 
   const defaults = parseStayParams(await searchParams);
+  const more = await related({ kind: kind === "hotels" ? "hotel" : "houseboat", slug: item.slug, place: item.place, tags: item.tags }).catch(() => []);
   const { name, summary, description, place, type, stars, cabins, capacity, dayTrip, basePriceBdt, amenities = [], images = [] } = item;
 
   return (
@@ -40,8 +44,7 @@ export default async function StayDetail({ kind, params, searchParams }) {
             {images.length > 0 && (
               <div className={images.length > 1 ? "gallery gallery--multi" : "gallery"}>
                 {images.slice(0, 5).map((src, i) => (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img key={src} src={src} alt={i === 0 ? name : ""} loading={i === 0 ? "eager" : "lazy"} />
+                  <SmartImage key={src} src={src} alt={i === 0 ? name : ""} priority={i === 0} sizes="(max-width: 860px) 100vw, 60vw" />
                 ))}
               </div>
             )}
@@ -84,6 +87,7 @@ export default async function StayDetail({ kind, params, searchParams }) {
           </aside>
         </div>
       </section>
+      <RecommendationStrip items={more} alt />
     </>
   );
 }

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { formatDateRange } from "../lib/dates";
 import PriceTag from "./PriceTag";
+import SmartImage from "./SmartImage";
 
 const BADGES = { upcoming: "Upcoming", ongoing: "Ongoing", previous: "Completed" };
 
@@ -11,8 +12,7 @@ export default function EventCard({ event }) {
     <article className="listing-card">
       <Link href={`/events/${slug}`} className="listing-card__media" aria-label={title}>
         {images?.[0] ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={images[0]} alt="" loading="lazy" />
+          <SmartImage src={images[0]} fill sizes="(max-width: 860px) 100vw, 33vw" />
         ) : (
           <span className="listing-card__placeholder" aria-hidden="true">{title.slice(0, 1)}</span>
         )}

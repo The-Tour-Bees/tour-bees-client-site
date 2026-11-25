@@ -4,6 +4,9 @@ import { listTripPaths } from "../lib/trips";
 import { ROUTES } from "../lib/nav";
 import { SITE } from "../lib/site";
 
+// Rebuilt hourly so new events, trips and stays appear without a redeploy.
+export const revalidate = 3600;
+
 export default async function sitemap() {
   const eventRoutes = (await listEventSlugs()).map((slug) => `/events/${slug}`);
 

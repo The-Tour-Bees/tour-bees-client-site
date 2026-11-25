@@ -4,7 +4,10 @@ import AccentTitle from "../../../../components/AccentTitle";
 import EnquiryForm from "../../../../components/EnquiryForm";
 import PriceTag from "../../../../components/PriceTag";
 import { formatDateRange } from "../../../../lib/dates";
+import RecommendationStrip from "../../../../components/RecommendationStrip";
+import SmartImage from "../../../../components/SmartImage";
 import { getEvent } from "../../../../lib/events";
+import { related } from "../../../../lib/services/recommendations";
 
 const BADGES = { upcoming: "Upcoming", ongoing: "Ongoing", previous: "Completed" };
 
@@ -23,6 +26,7 @@ export default async function EventPage({ params }) {
   if (!event) notFound();
 
   const { title, summary, description, location, startsOn, endsOn, hostName, basePriceBdt, seats, seatsLeft, images = [], inclusions = [], itinerary = [], status } = event;
+  const more = await related({ kind: "event", slug: event.slug, place: event.place, tags: event.tags }).catch(() => []);
   const open = status !== "previous" && seatsLeft !== 0;
 
   const fields = [
@@ -50,8 +54,7 @@ export default async function EventPage({ params }) {
             {images.length > 0 && (
               <div className={images.length > 1 ? "gallery gallery--multi" : "gallery"}>
                 {images.slice(0, 5).map((src, i) => (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img key={src} src={src} alt={i === 0 ? title : ""} loading={i === 0 ? "eager" : "lazy"} />
+                  <SmartImage key={src} src={src} alt={i === 0 ? title : ""} priority={i === 0} sizes="(max-width: 860px) 100vw, 60vw" />
                 ))}
               </div>
             )}
@@ -125,6 +128,7 @@ export default async function EventPage({ params }) {
           </aside>
         </div>
       </section>
+      <RecommendationStrip items={more} alt />
     </>
   );
 }

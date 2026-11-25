@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { TYPES } from "../lib/stays";
 import PriceTag from "./PriceTag";
+import SmartImage from "./SmartImage";
 
 export default function StayCard({ kind, item, query = "" }) {
   const { slug, name, summary, place, type, stars, cabins, capacity, basePriceBdt, images } = item;
@@ -15,8 +16,7 @@ export default function StayCard({ kind, item, query = "" }) {
     <article className="listing-card">
       <Link href={href} className="listing-card__media" aria-label={name}>
         {images?.[0] ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={images[0]} alt="" loading="lazy" />
+          <SmartImage src={images[0]} fill sizes="(max-width: 860px) 100vw, 33vw" />
         ) : (
           <span className="listing-card__placeholder" aria-hidden="true">{name.slice(0, 1)}</span>
         )}

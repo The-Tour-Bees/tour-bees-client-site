@@ -2,7 +2,7 @@ import ForgotPasswordForm from "../../../components/auth/ForgotPasswordForm";
 import AccentTitle from "../../../components/AccentTitle";
 import { authConfigured } from "../../../lib/auth/session";
 
-export const metadata = { title: "Reset your password" };
+export const metadata = { title: "Reset your password", description: "Reset your Tour Bees password.", robots: { index: false, follow: false } };
 
 export default function ForgotPasswordPage() {
   return (

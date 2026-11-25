@@ -42,13 +42,16 @@ The Tour Bees is a travel platform offering events, customized trips, hotel/reso
 
 ## 2. Current State
 
-Built so far (Next.js App Router, plain JS, deployed on Vercel):
+Built (Next.js App Router, plain JS, deployed on Vercel). Phases 0–6, 8 and 9 are done; Phase 7 (EMI) is on hold and `/emi` stays "coming soon".
 
-- `app/Hero.js` — hero section with dimmed background, nav, search card (Stays / Tours / Activities tabs, location, dates, guests, popular chips).
-- Mobile responsive layout with hamburger menu (`app/globals.css`).
-- `public/hero-bg.png`, `public/logo.png`.
+- Site shell, header with dropdowns and hamburger menu, footer, currency switcher and `PriceTag` (BDT / USD / EUR / INR).
+- Public pages: Home (hero + recommendations), About, Events (previous / ongoing / upcoming + detail), Customized Trip (domestic / international + detail + "Build my trip"), Hotels, Houseboats (listing + detail + enquiry), VIP, Investor, Contact, Other's Project, Booking Conditions.
+- MongoDB with a cached connection; every page falls back to `lib/data/*` when `MONGODB_URI` is not set.
+- Auth and admin (phases 5–6): sign-in, one-time codes, password reset, admin approval, add user, role dashboards, guest bookings, commissions, enquiry inbox.
+- Phase 8: rule-based recommendations in `lib/services/recommendations.js`, `GET /api/recommendations?from=&to=&place=`, strips on Home, Events, Customized Trip and "You may also like" on event, trip, hotel and houseboat detail pages.
+- Phase 9 (code parts): per-page metadata, Open Graph defaults, `sitemap.xml`, `robots.txt`, skip link and focus states, `next/image` for local images, Vercel Analytics, 404 and error pages, README and `LAUNCH_CHECKLIST.md`.
 
-Everything else in this plan is still to build.
+Still open: Phase 7 (EMI), the section 14 questions, real content, and the manual launch steps in `LAUNCH_CHECKLIST.md`.
 
 ---
 

@@ -4,6 +4,9 @@ import { formatDuration, getTrip, SCOPES } from "../lib/trips";
 import AccentTitle from "./AccentTitle";
 import EnquiryForm from "./EnquiryForm";
 import PriceTag from "./PriceTag";
+import RecommendationStrip from "./RecommendationStrip";
+import SmartImage from "./SmartImage";
+import { related } from "../lib/services/recommendations";
 
 export async function tripMetadata(scope, params) {
   const trip = await getTrip((await params).slug);
@@ -21,6 +24,7 @@ export default async function TripDetail({ scope, params }) {
 
   const { title, summary, description, destination, durationDays, basePriceBdt, images = [], inclusions = [], exclusions = [], itinerary = [] } = trip;
 
+  const more = await related({ kind: "trip", slug: trip.slug, place: destination, tags: trip.tags }).catch(() => []);
   const fields = [
     { name: "name", label: "Full name", required: true, autoComplete: "name" },
     { name: "mobile", label: "Mobile / WhatsApp", type: "tel", required: true, autoComplete: "tel", placeholder: "+8801XXXXXXXXX" },
@@ -47,8 +51,7 @@ export default async function TripDetail({ scope, params }) {
             {images.length > 0 && (
               <div className={images.length > 1 ? "gallery gallery--multi" : "gallery"}>
                 {images.slice(0, 5).map((src, i) => (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img key={src} src={src} alt={i === 0 ? title : ""} loading={i === 0 ? "eager" : "lazy"} />
+                  <SmartImage key={src} src={src} alt={i === 0 ? title : ""} priority={i === 0} sizes="(max-width: 860px) 100vw, 60vw" />
                 ))}
               </div>
             )}
@@ -129,6 +132,7 @@ export default async function TripDetail({ scope, params }) {
           </aside>
         </div>
       </section>
+      <RecommendationStrip items={more} alt />
     </>
   );
 }

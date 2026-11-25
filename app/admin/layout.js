@@ -12,7 +12,7 @@ export default async function AdminLayout({ children }) {
   return (
     <div className="admin-shell">
       <AdminSidebar role={user.accountType} name={user.fullName} />
-      <main className="admin-main">{children}</main>
+      <main id="main" className="admin-main" tabIndex={-1}>{children}</main>
     </div>
   );
 }
