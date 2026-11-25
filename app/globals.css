@@ -414,7 +414,7 @@ h1 {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.price__amount { font-weight: 600; font-variant-numeric: tabular-nums; }
+.price__amount { font-weight: 600; font-variant-numeric: tabular-nums; color: var(--amber); }
 .price__suffix { color: var(--secondary); font-size: 0.85em; }
 
 .main { color: #fff; }
@@ -423,7 +423,7 @@ h1 {
 .section { padding: 72px 0; }
 .section--alt { background: rgba(0, 0, 0, 0.25); }
 .section__head { max-width: 640px; margin: 0 0 32px; }
-.section__head h2 { margin: 0; font-size: clamp(26px, 3.2vw, 38px); font-weight: 600; letter-spacing: -0.03em; }
+.section__head h2 { margin: 0; font-size: clamp(26px, 3.2vw, 38px); font-weight: 600; letter-spacing: -0.03em; color: var(--amber); }
 .section__head p { margin: 12px 0 0; font-size: 17px; line-height: 1.55; color: rgba(255, 244, 230, 0.78); }
 
 .grid { display: grid; gap: 20px; }
@@ -439,7 +439,7 @@ h1 {
   border: 1px solid rgba(255, 255, 255, 0.14);
   backdrop-filter: blur(10px);
 }
-.card h3 { margin: 0 0 8px; font-size: 19px; font-weight: 600; }
+.card h3 { margin: 0 0 8px; font-size: 19px; font-weight: 600; color: #fff; }
 .card p { margin: 0; line-height: 1.55; color: rgba(255, 244, 230, 0.75); }
 a.card--link { transition: background 0.2s, border-color 0.2s, transform 0.2s; }
 a.card--link:hover { background: rgba(255, 255, 255, 0.09); border-color: rgba(245, 166, 35, 0.5); transform: translateY(-2px); color: #fff; }
@@ -607,8 +607,8 @@ textarea.form__input { min-height: 130px; resize: vertical; }
 .listing-card__body { display: flex; flex-direction: column; gap: 6px; padding: 18px 20px 20px; flex: 1; }
 .listing-card__meta { margin: 0; font-size: 13px; letter-spacing: 0.04em; color: var(--amber); }
 .listing-card h3 { margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -0.01em; }
-.listing-card h3 a { color: #fff; }
-.listing-card h3 a:hover { color: var(--amber); }
+.listing-card h3 a { color: var(--amber); }
+.listing-card h3 a:hover { color: #fff; }
 .listing-card__summary { margin: 0; line-height: 1.5; color: rgba(255, 244, 230, 0.75); }
 .listing-card__where { margin: 0; font-size: 14px; color: rgba(255, 244, 230, 0.6); }
 .listing-card__foot { margin-top: auto; padding-top: 12px; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
@@ -799,11 +799,14 @@ textarea.form__input { min-height: 130px; resize: vertical; }
 }
 
 @media (max-width: 860px) {
-  .filters { border-radius: 28px; flex-direction: column; align-items: stretch; padding: 8px; }
-  .filters .form__input { flex: none; border-radius: 20px; }
-  .filters .form__input + .form__input { border-left: 0; border-top: 1px solid var(--border); border-radius: 20px; }
-  .filters .btn { width: 100%; margin-top: 6px; }
-  .filters__clear { text-align: center; padding: 8px 0; }
+  /* Compact filter bar on mobile: search takes its own row, the two dropdowns
+     sit side by side in one row, Apply + Clear share the last row. */
+  .filters { border-radius: 28px; padding: 8px; gap: 6px; }
+  .filters > .form__input { flex: 1 1 100%; border-radius: 20px; }
+  .filters .select { flex: 1 1 calc(50% - 6px); min-width: 0; }
+  .filters .select .form__input { border-left: 0; border-radius: 20px; }
+  .filters .btn { flex: 1 1 auto; margin-top: 2px; }
+  .filters__clear { align-self: center; padding: 8px 6px; }
 }
 
 @media (max-width: 640px) {
