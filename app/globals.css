@@ -941,3 +941,63 @@ textarea.form__input { min-height: 130px; resize: vertical; }
 .skip-link:focus { top: 12px; }
 #main:focus { outline: 0; }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }
+
+/* ===== .datepicker: themed date picker (components/DatePicker.js) ===== */
+.datepicker { position: relative; min-width: 0; flex: 1 1 0; }
+.datepicker__trigger { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; text-align: left; cursor: pointer; font: inherit; }
+.datepicker:not(.datepicker--bare) .datepicker__trigger { justify-content: flex-start; }
+.datepicker__value--empty { opacity: 0.55; }
+.datepicker__icon { flex: none; color: var(--amber); }
+.datepicker__trigger--bare { border: 0; background: transparent; padding: 0; min-width: 0; font-size: 15px; color: var(--secondary); border-radius: 8px; }
+.datepicker__trigger--bare:focus-visible, .datepicker__nav:focus-visible, .datepicker__day:focus-visible, .datepicker__clear:focus-visible, .datepicker__today:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+.datepicker__trigger:focus-visible { outline: 0; border-color: var(--amber); box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.25); }
+.datepicker__trigger--bare:focus-visible { box-shadow: none; outline: 2px solid var(--amber); }
+.datepicker__pop {
+  position: absolute; top: calc(100% + 10px); left: 0; z-index: 30;
+  width: 300px; max-width: calc(100vw - 24px); padding: 16px;
+  background: #fff; color: #1c1c1e; border: 1px solid var(--border); border-radius: 18px;
+  box-shadow: 0 18px 50px -12px rgba(0, 0, 0, 0.35);
+}
+.datepicker__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.datepicker__title { font-size: 16px; font-weight: 700; text-align: left; }
+.datepicker__navs { display: flex; gap: 2px; }
+.datepicker__nav { width: 32px; height: 32px; border: 0; border-radius: 50%; background: transparent; color: #1c1c1e; font-size: 22px; line-height: 1; cursor: pointer; }
+.datepicker__nav:hover { background: rgba(245, 166, 35, 0.16); color: #1c1c1e; }
+.datepicker__grid { width: 100%; border-collapse: separate; border-spacing: 2px; table-layout: fixed; }
+.datepicker__grid td { padding: 0; text-align: center; }
+.datepicker__dow { padding: 4px 0; font-size: 12px; font-weight: 500; color: var(--faint); }
+.datepicker__day { width: 100%; aspect-ratio: 1; min-height: 34px; border: 0; border-radius: 50%; background: transparent; color: #1c1c1e; font: inherit; font-size: 14px; cursor: pointer; }
+.datepicker__day:hover:not(:disabled) { background: rgba(245, 166, 35, 0.16); }
+.datepicker__day--today { box-shadow: inset 0 0 0 1px rgba(245, 166, 35, 0.7); }
+.datepicker__day--on, .datepicker__day--on:hover:not(:disabled) { background: var(--amber); color: #1c1c1e; font-weight: 700; }
+.datepicker__day:disabled { color: var(--faint); opacity: 0.4; cursor: not-allowed; }
+.datepicker__foot { display: flex; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-row); }
+.datepicker__clear, .datepicker__today { border: 0; background: transparent; font: inherit; font-size: 14px; cursor: pointer; padding: 6px 8px; border-radius: 8px; }
+.datepicker__clear { color: var(--secondary); }
+.datepicker__today { color: var(--amber); font-weight: 700; }
+.datepicker__today:hover:not(:disabled) { color: #ffb840; }
+.datepicker__today:disabled { opacity: 0.4; cursor: not-allowed; }
+.dates .datepicker--bare:last-child .datepicker__pop { left: auto; right: 0; }
+@media (max-width: 640px) {
+  .datepicker__pop { width: min(300px, calc(100vw - 24px)); }
+}
+
+/* ===== .select: themed dropdown (components/Select.js) ===== */
+.select { position: relative; min-width: 0; }
+.select__btn { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; text-align: left; cursor: pointer; }
+.select__value { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.select__chev { flex: none; opacity: 0.7; transition: transform 0.15s; }
+.select__btn[aria-expanded="true"] .select__chev { transform: rotate(180deg); }
+.select__list {
+  position: absolute; top: calc(100% + 8px); left: 0; z-index: 30; min-width: 100%; width: max-content; max-width: min(320px, calc(100vw - 24px));
+  max-height: 280px; overflow-y: auto; margin: 0; padding: 6px; list-style: none;
+  background: #fff; color: #1c1c1e; border: 1px solid var(--border); border-radius: 14px;
+  box-shadow: 0 18px 50px -12px rgba(0, 0, 0, 0.35);
+}
+.select__opt { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; border-radius: 10px; font-size: 15px; cursor: pointer; }
+.select__opt--active { background: var(--subtle); }
+.select__opt--on { background: rgba(245, 166, 35, 0.16); font-weight: 700; }
+.select__check { flex: none; color: var(--amber); }
+.filters .select { flex: 1 1 160px; }
+.filters .select .form__input { width: 100%; }
+.filters .form__input + .select .form__input, .filters .select + .select .form__input { border-left: 1px solid var(--border); border-radius: 0; }

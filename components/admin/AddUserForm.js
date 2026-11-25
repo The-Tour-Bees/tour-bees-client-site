@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { sendJson } from "../../lib/client/post";
 import Field, { inputProps } from "../auth/Field";
+import DatePicker from "../DatePicker";
 
 const TYPES = [["host", "Host"], ["agent", "Agent"], ["member", "Member"]];
 const BLOOD = ["", "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
@@ -82,7 +83,7 @@ export default function AddUserForm() {
         <Field id="bloodGroup" label="Blood group" error={fe.bloodGroup}>
           <select {...inputProps("bloodGroup", fe.bloodGroup)} defaultValue="">{BLOOD.map((b) => <option key={b} value={b}>{b || "Not given"}</option>)}</select>
         </Field>
-        <Field id="dateOfBirth" label="Date of birth" error={fe.dateOfBirth}><input {...inputProps("dateOfBirth", fe.dateOfBirth)} type="date" /></Field>
+        <Field id="dateOfBirth" label="Date of birth" error={fe.dateOfBirth}><DatePicker {...inputProps("dateOfBirth", fe.dateOfBirth)} /></Field>
         <Field id="nidNumber" label="NID number" error={fe.nidNumber}><input {...inputProps("nidNumber", fe.nidNumber)} type="text" autoComplete="off" /></Field>
         <Field id="emergencyContact" label="Emergency contact" error={fe.emergencyContact}><input {...inputProps("emergencyContact", fe.emergencyContact)} type="tel" autoComplete="off" /></Field>
         <Field id="presentAddress" label="Present address" full error={fe.presentAddress}><textarea {...inputProps("presentAddress", fe.presentAddress)} rows={3} /></Field>
@@ -102,7 +103,7 @@ export default function AddUserForm() {
           <Field id="tier" label="Member tier" error={fe.tier}>
             <select {...inputProps("tier", fe.tier)} defaultValue="regular"><option value="regular">Regular</option><option value="vip">VIP</option></select>
           </Field>
-          <Field id="expiresAt" label="Membership expiry" error={fe.expiresAt}><input {...inputProps("expiresAt", fe.expiresAt)} type="date" /></Field>
+          <Field id="expiresAt" label="Membership expiry" error={fe.expiresAt}><DatePicker {...inputProps("expiresAt", fe.expiresAt)} /></Field>
         </fieldset>
       )}
 

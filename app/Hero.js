@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import DatePicker from "../components/DatePicker";
 import SiteHeader from "../components/SiteHeader";
 
 const TABS = ["Stays", "Tours", "Activities"];
@@ -101,18 +102,23 @@ export default function Hero() {
             <div className="field field--dates">
               <span className="field__label">Check in – Check out</span>
               <div className="dates">
-                <input
-                  type="date"
-                  aria-label="Check in"
+                <DatePicker
+                  variant="bare"
+                  ariaLabel="Check in"
                   value={checkIn}
-                  onChange={(e) => setCheckIn(e.target.value)}
+                  min="today"
+                  onChange={(v) => {
+                    setCheckIn(v);
+                    if (v && checkOut && checkOut < v) setCheckOut(v);
+                  }}
                 />
                 <span className="dates__arrow">→</span>
-                <input
-                  type="date"
-                  aria-label="Check out"
+                <DatePicker
+                  variant="bare"
+                  ariaLabel="Check out"
                   value={checkOut}
-                  onChange={(e) => setCheckOut(e.target.value)}
+                  min={checkIn || "today"}
+                  onChange={setCheckOut}
                 />
               </div>
             </div>

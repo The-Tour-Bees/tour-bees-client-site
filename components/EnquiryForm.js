@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Select from "./Select";
 
 // hidden: extra values sent with the form, e.g. { eventSlug }
 // defaults: initial values by field name, e.g. from the search the visitor just made
@@ -84,11 +85,14 @@ export default function EnquiryForm({
             {f.type === "textarea" ? (
               <textarea {...common} rows={5} />
             ) : f.type === "select" ? (
-              <select {...common} defaultValue={defaults?.[f.name] ?? f.options[0]}>
-                {f.options.map((o) => (
-                  <option key={o} value={o}>{o}</option>
-                ))}
-              </select>
+              <Select
+                id={id}
+                name={f.name}
+                defaultValue={defaults?.[f.name] ?? f.options[0]}
+                options={f.options.map((o) => ({ value: o, label: o }))}
+                aria-invalid={err ? true : undefined}
+                aria-describedby={err ? `${id}-error` : undefined}
+              />
             ) : (
               <input {...common} type={f.type ?? "text"} autoComplete={f.autoComplete} defaultValue={defaults?.[f.name]} />
             )}

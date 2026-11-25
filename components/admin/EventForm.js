@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { sendJson } from "../../lib/client/post";
 import Field, { inputProps } from "../auth/Field";
+import DatePicker from "../DatePicker";
 
 const slugify = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 80);
 
@@ -58,8 +59,8 @@ export default function EventForm({ hosts, initial, id }) {
 
       <fieldset className="panel admin-fieldset">
         <legend>When, where and price</legend>
-        <Field id="startsOn" label="Starts on" required error={fe.startsOn}><input {...inputProps("startsOn", fe.startsOn)} type="date" defaultValue={v.startsOn} /></Field>
-        <Field id="endsOn" label="Ends on" error={fe.endsOn}><input {...inputProps("endsOn", fe.endsOn)} type="date" defaultValue={v.endsOn} /></Field>
+        <Field id="startsOn" label="Starts on" required error={fe.startsOn}><DatePicker {...inputProps("startsOn", fe.startsOn)} defaultValue={v.startsOn} /></Field>
+        <Field id="endsOn" label="Ends on" error={fe.endsOn}><DatePicker {...inputProps("endsOn", fe.endsOn)} defaultValue={v.endsOn} /></Field>
         <Field id="location" label="Location" required error={fe.location}><input {...inputProps("location", fe.location)} type="text" defaultValue={v.location} /></Field>
         <Field id="place" label="Place (for the filter)" error={fe.place} hint="Leave empty to use the location"><input {...inputProps("place", fe.place)} type="text" defaultValue={v.place} /></Field>
         <Field id="basePriceBdt" label="Price per person (BDT)" required error={fe.basePriceBdt}><input {...inputProps("basePriceBdt", fe.basePriceBdt)} type="number" min="0" defaultValue={v.basePriceBdt} /></Field>
