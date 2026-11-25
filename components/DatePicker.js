@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const WEEKDAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
@@ -41,6 +42,8 @@ export default function DatePicker({
   const [focusDay, setFocusDay] = useState("");
   const root = useRef(null);
   const trigger = useRef(null);
+  const pop = useRef(null);
+  const [popStyle, setPopStyle] = useState(null);
   const uid = useId();
 
   const minD = min === "today" ? (open ? todayIso() : "") : min || "";
@@ -64,7 +67,9 @@ export default function DatePicker({
 
   useEffect(() => {
     if (!open) return;
-    const onDown = (e) => { if (!root.current?.contains(e.target)) setOpen(false); };
+    const onDown = (e) => {
+      if (!root.current?.contains(e.target) && !pop.current?.contains(e.target)) setOpen(false);
+    };
     document.addEventListener("mousedown", onDown);
     document.addEventListener("touchstart", onDown);
     return () => {
@@ -73,9 +78,35 @@ export default function DatePicker({
     };
   }, [open]);
 
+  // The popover is portalled to <body> with fixed positioning so no ancestor
+  // (e.g. the hero's overflow: hidden) can clip it. Place it under the trigger,
+  // flipping above when there is not enough room below, and keep it glued to
+  // the trigger on scroll / resize. Hidden until first measured.
+  useEffect(() => {
+    if (!open) { setPopStyle(null); return; }
+    const place = () => {
+      const t = trigger.current, p = pop.current;
+      if (!t || !p) return;
+      const r = t.getBoundingClientRect();
+      const pw = p.offsetWidth, ph = p.offsetHeight;
+      const vw = window.innerWidth, vh = window.innerHeight;
+      const left = Math.min(Math.max(12, r.left), Math.max(12, vw - pw - 12));
+      let top = r.bottom + 10;
+      if (top + ph > vh - 8) top = r.top - 10 - ph > 8 ? r.top - 10 - ph : Math.max(8, vh - ph - 8);
+      setPopStyle({ top, left });
+    };
+    place();
+    window.addEventListener("resize", place);
+    window.addEventListener("scroll", place, true);
+    return () => {
+      window.removeEventListener("resize", place);
+      window.removeEventListener("scroll", place, true);
+    };
+  }, [open, view]);
+
   // Move DOM focus to the active day when it changes via keyboard.
   useEffect(() => {
-    if (open && focusDay) root.current?.querySelector(`[data-day="${focusDay}"]`)?.focus();
+    if (open && focusDay) pop.current?.querySelector(`[data-day="${focusDay}"]`)?.focus();
   }, [open, focusDay, view]);
 
   const shiftMonth = (delta) => {
@@ -170,8 +201,8 @@ export default function DatePicker({
         {variant === "bare" && icon}
       </button>
 
-      {open && (
-        <div className="datepicker__pop" role="dialog" aria-modal="false" aria-labelledby={titleId} id={`${uid}-dialog`}>
+      {open && createPortal(
+        <div className="datepicker__pop datepicker__pop--fixed" ref={pop} style={popStyle ? { top: popStyle.top, left: popStyle.left } : { visibility: "hidden" }} role="dialog" aria-modal="false" aria-labelledby={titleId} id={`${uid}-dialog`}>
           <div className="datepicker__head">
             <div className="datepicker__title" id={titleId} aria-live="polite">{MONTHS[view.m]} {view.y}</div>
             <div className="datepicker__navs">
@@ -216,8 +247,7 @@ export default function DatePicker({
             <button type="button" className="datepicker__clear" onClick={() => { commit(""); close(true); }}>Clear</button>
             <button type="button" className="datepicker__today" disabled={disabled(todayIso())} onClick={() => pick(todayIso())}>Today</button>
           </div>
-        </div>
-      )}
+        </div>, document.body)}
     </div>
   );
 }

@@ -958,6 +958,7 @@ textarea.form__input { min-height: 130px; resize: vertical; }
   background: #fff; color: #1c1c1e; border: 1px solid var(--border); border-radius: 18px;
   box-shadow: 0 18px 50px -12px rgba(0, 0, 0, 0.35);
 }
+.datepicker__pop--fixed { position: fixed; z-index: 1000; right: auto; bottom: auto; margin: 0; }
 .datepicker__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
 .datepicker__title { font-size: 16px; font-weight: 700; text-align: left; }
 .datepicker__navs { display: flex; gap: 2px; }
